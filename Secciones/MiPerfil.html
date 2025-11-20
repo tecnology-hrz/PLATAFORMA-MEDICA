@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Eva Cirugía Corporal</title>
+    <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
+    <link rel="stylesheet" href="../Componentes/css/MiPerfil.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <span class="sidebar-title">EVA Cirugía</span>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="PanelPrincipal.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-home"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Pacientes.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    <span class="menu-text">Pacientes</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="HistoriasClinicas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-file-medical"></i></span>
+                    <span class="menu-text">Historias Clínicas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Cirugias.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-procedures"></i></span>
+                    <span class="menu-text">Cirugías</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Citas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="menu-text">Citas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Tratamientos.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-syringe"></i></span>
+                    <span class="menu-text">Tratamientos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="GestionUsuarios.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-user-cog"></i></span>
+                    <span class="menu-text">Gestión de Usuarios</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="MiPerfil.html" class="user-profile" style="text-decoration: none;">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Usuario</span>
+                    <span class="user-role" id="userRole">Administrador</span>
+                </div>
+            </a>
+            <div style="margin-top: 10px;">
+                <a href="#" class="menu-link" id="logoutBtn">
+                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="menu-text">Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="perfil-container">
+            <div class="perfil-grid">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar-wrapper">
+                            <div class="profile-avatar" id="profileAvatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <label for="photoInput" class="change-photo-btn" id="changePhotoBtn">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="photoInput" accept="image/*">
+                        </div>
+                        <h2 class="profile-name" id="profileName">Nombre Usuario</h2>
+                        <p class="profile-role" id="profileRole">Especialidad</p>
+                    </div>
+
+                    <div class="profile-body">
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="profile-info-content">
+                                <div class="profile-info-label">Email</div>
+                                <div class="profile-info-value" id="infoEmail">email@example.com</div>
+                            </div>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="profile-info-content">
+                                <div class="profile-info-label">Teléfono</div>
+                                <div class="profile-info-value" id="infoTelefono">+52 123 456 7890</div>
+                            </div>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                            <div class="profile-info-content">
+                                <div class="profile-info-label">Especialidad</div>
+                                <div class="profile-info-value" id="infoEspecialidad">Cirujano Plástico</div>
+                            </div>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="profile-info-content">
+                                <div class="profile-info-label">Miembro desde</div>
+                                <div class="profile-info-value" id="infoFechaRegistro">Enero 2024</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Form Card -->
+                <div class="edit-form-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Información Personal</h2>
+                        <div class="edit-mode-toggle">
+                            <span>Modo Edición</span>
+                            <div class="toggle-switch" id="editModeToggle">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="profileForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user"></i>
+                                    Nombre Completo
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="nombre" 
+                                    class="form-input" 
+                                    placeholder="Dr. Juan Pérez"
+                                    disabled
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-envelope"></i>
+                                    Correo Electrónico
+                                </label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    class="form-input" 
+                                    placeholder="doctor@clinica.com"
+                                    disabled
+                                    readonly
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-phone"></i>
+                                    Teléfono
+                                </label>
+                                <input 
+                                    type="tel" 
+                                    id="telefono" 
+                                    class="form-input" 
+                                    placeholder="+52 123 456 7890"
+                                    disabled
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-stethoscope"></i>
+                                    Especialidad
+                                </label>
+                                <select id="especialidad" class="form-select" disabled>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Médico General">Médico General</option>
+                                    <option value="Cirujano Plástico">Cirujano Plástico</option>
+                                    <option value="Anestesiólogo">Anestesiólogo</option>
+                                    <option value="Dermatólogo">Dermatólogo</option>
+                                    <option value="Cirujano Maxilofacial">Cirujano Maxilofacial</option>
+                                    <option value="Medicina Estética">Medicina Estética</option>
+                                    <option value="Enfermero/a">Enfermero/a</option>
+                                    <option value="Instrumentista">Instrumentista</option>
+                                    <option value="Administrador">Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Password Section -->
+                        <div class="password-section">
+                            <h3 class="password-section-title">
+                                <i class="fas fa-lock"></i>
+                                Cambiar Contraseña
+                            </h3>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-key"></i>
+                                    Contraseña Actual
+                                </label>
+                                <div class="password-input-wrapper">
+                                    <input 
+                                        type="password" 
+                                        id="currentPassword" 
+                                        class="form-input" 
+                                        placeholder="••••••••"
+                                        disabled
+                                    >
+                                    <button type="button" class="toggle-password">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-lock"></i>
+                                        Nueva Contraseña
+                                    </label>
+                                    <div class="password-input-wrapper">
+                                        <input 
+                                            type="password" 
+                                            id="newPassword" 
+                                            class="form-input" 
+                                            placeholder="••••••••"
+                                            disabled
+                                        >
+                                        <button type="button" class="toggle-password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <p class="password-hint">Mínimo 6 caracteres</p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-lock"></i>
+                                        Confirmar Contraseña
+                                    </label>
+                                    <div class="password-input-wrapper">
+                                        <input 
+                                            type="password" 
+                                            id="confirmPassword" 
+                                            class="form-input" 
+                                            placeholder="••••••••"
+                                            disabled
+                                        >
+                                        <button type="button" class="toggle-password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions" style="display: none;">
+                            <button type="button" class="btn btn-cancel" id="cancelBtn">
+                                <i class="fas fa-times"></i>
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-save">
+                                <i class="fas fa-save"></i>
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Procesando...</p>
+    </div>
+
+    <!-- Message Modal -->
+    <div id="messageModal" class="message-modal">
+        <div class="message-content">
+            <i class="message-icon"></i>
+            <p class="message-text"></p>
+            <button class="btn-close-message">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="logout-title">¿Cerrar Sesión?</h2>
+            <p class="logout-message">
+                ¿Estás seguro de que deseas cerrar sesión? Podrás volver a iniciar sesión en cualquier momento.
+            </p>
+            <div class="logout-actions">
+                <button class="btn-cancel" id="cancelLogout">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-confirm" id="confirmLogout">
+                    <i class="fas fa-check"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../Componentes/js/Sidebar.js"></script>
+    <script type="module" src="../Componentes/js/MiPerfil.js"></script>
+</body>
+</html>

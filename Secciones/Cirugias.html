@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cirugías - Eva Cirugía Corporal</title>
+    <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
+    <link rel="stylesheet" href="../Componentes/css/Cirugias.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <span class="sidebar-title">EVA Cirugía</span>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="PanelPrincipal.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-home"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Pacientes.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    <span class="menu-text">Pacientes</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="HistoriasClinicas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-file-medical"></i></span>
+                    <span class="menu-text">Historias Clínicas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Cirugias.html" class="menu-link active">
+                    <span class="menu-icon"><i class="fas fa-procedures"></i></span>
+                    <span class="menu-text">Cirugías</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Citas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="menu-text">Citas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Tratamientos.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-syringe"></i></span>
+                    <span class="menu-text">Tratamientos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="GestionUsuarios.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-user-cog"></i></span>
+                    <span class="menu-text">Gestión de Usuarios</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="MiPerfil.html" class="user-profile" style="text-decoration: none;">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Usuario</span>
+                    <span class="user-role" id="userRole">Administrador</span>
+                </div>
+            </a>
+            <div style="margin-top: 10px;">
+                <a href="#" class="menu-link" id="logoutBtn">
+                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="menu-text">Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="cirugias-container">
+            <!-- Header -->
+            <div class="cirugias-header">
+                <div class="header-top">
+                    <h1 class="page-title">Gestión de Cirugías</h1>
+                    <div class="header-actions">
+                        <button class="btn-view-toggle" id="toggleView">
+                            <i class="fas fa-calendar-alt"></i>
+                            Vista Calendario
+                        </button>
+                        <button class="btn-add" id="addCirugiaBtn">
+                            <i class="fas fa-plus"></i>
+                            Nueva Cirugía
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-row">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar por paciente...">
+                        <button class="clear-search" id="clearSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <select id="filterTipoCirugia" class="filter-select">
+                        <option value="">Todos los Tipos</option>
+                        <option value="Liposucción">Liposucción</option>
+                        <option value="Abdominoplastia">Abdominoplastia</option>
+                        <option value="Mamoplastia">Mamoplastia</option>
+                        <option value="Rinoplastia">Rinoplastia</option>
+                        <option value="Blefaroplastia">Blefaroplastia</option>
+                        <option value="Lifting Facial">Lifting Facial</option>
+                        <option value="Aumento de Glúteos">Aumento de Glúteos</option>
+                        <option value="Reducción de Senos">Reducción de Senos</option>
+                        <option value="Otra">Otra</option>
+                    </select>
+                    <select id="filterEstado" class="filter-select">
+                        <option value="">Todos los Estados</option>
+                        <option value="Programada">Programada</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="Realizada">Realizada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="cirugias-stats">
+                <div class="stat-card programada">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalProgramadas">0</h3>
+                        <p>Programadas</p>
+                    </div>
+                </div>
+                <div class="stat-card proceso">
+                    <div class="stat-icon">
+                        <i class="fas fa-procedures"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalEnProceso">0</h3>
+                        <p>En Proceso</p>
+                    </div>
+                </div>
+                <div class="stat-card realizada">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalRealizadas">0</h3>
+                        <p>Realizadas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List View -->
+            <div class="cirugias-table-container" id="listView">
+                <div class="table-header">
+                    <h2 class="table-title">Lista de Cirugías</h2>
+                    <span class="results-count" id="resultsCount">0 cirugías</span>
+                </div>
+
+                <table class="cirugias-table">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Tipo de Cirugía</th>
+                            <th>Fecha y Hora</th>
+                            <th>Cirujano</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cirugiasTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px;">
+                                Cargando cirugías...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Calendar View -->
+            <div class="calendar-container" id="calendarView" style="display: none;">
+                <div class="calendar-header">
+                    <button class="btn-calendar-nav" id="prevMonth">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h2 class="calendar-title" id="calendarTitle">Noviembre 2025</h2>
+                    <button class="btn-calendar-nav" id="nextMonth">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
+                </div>
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <span class="legend-color programada"></span>
+                        <span>Programada</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color proceso"></span>
+                        <span>En Proceso</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color realizada"></span>
+                        <span>Realizada</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Cirugia Modal -->
+    <div class="cirugia-modal" id="cirugiaModal">
+        <div class="cirugia-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Nueva Cirugía</h2>
+                <button class="btn-close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="cirugiaForm">
+                <div class="modal-body">
+                    <!-- Información Básica -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user-injured"></i>
+                                Paciente *
+                            </label>
+                            <select id="pacienteId" class="form-select" required>
+                                <option value="">Seleccionar paciente</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-procedures"></i>
+                                Tipo de Cirugía *
+                            </label>
+                            <select id="tipoCirugia" class="form-select" required>
+                                <option value="">Seleccionar tipo</option>
+                                <option value="Mastoplastía de Reducción">Mastoplastía de Reducción</option>
+                                <option value="Mentoplastia">Mentoplastia</option>
+                                <option value="Braquioplastia">Braquioplastia</option>
+                                <option value="Otoplastia">Otoplastia</option>
+                                <option value="Gluteoplastia">Gluteoplastia</option>
+                                <option value="Queiloplastia">Queiloplastia</option>
+                                <option value="Lipolight Sculpsure">Lipolight Sculpsure</option>
+                                <option value="Bichectomia">Bichectomia</option>
+                                <option value="Lipoescultura">Lipoescultura</option>
+                                <option value="Rinoplastia">Rinoplastia</option>
+                                <option value="Abdominoplastia">Abdominoplastia</option>
+                                <option value="Blefaroplastia">Blefaroplastia</option>
+                                <option value="Mastoplastía de Aumento">Mastoplastía de Aumento</option>
+                                <option value="Frontoplastia">Frontoplastia</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user-md"></i>
+                                Cirujano Principal *
+                            </label>
+                            <select id="cirujanoId" class="form-select" required>
+                                <option value="">Seleccionar cirujano</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                Fecha de Cirugía *
+                            </label>
+                            <input type="date" id="fechaCirugia" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-clock"></i>
+                                Hora de Inicio *
+                            </label>
+                            <div class="time-input-wrapper" id="timeInputWrapper">
+                                <input type="text" id="timeDisplay" class="form-input" placeholder="Seleccionar hora"
+                                    readonly required>
+                                <i class="fas fa-clock time-icon"></i>
+                            </div>
+                            <input type="hidden" id="horaSelect" required>
+                            <input type="hidden" id="minutoSelect" required>
+                            <input type="hidden" id="periodoSelect" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-hourglass-half"></i>
+                                Duración Estimada (horas) *
+                            </label>
+                            <input type="number" id="duracion" class="form-input" placeholder="2" min="0.5" step="0.5"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fas fa-info-circle"></i>
+                            Estado
+                        </label>
+                        <select id="estado" class="form-select">
+                            <option value="Programada">Programada</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Realizada">Realizada</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </select>
+                    </div>
+
+                    <!-- Equipo Quirúrgico -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-users-cog"></i>
+                            Equipo Quirúrgico
+                        </h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-syringe"></i>
+                                    Anestesiólogo
+                                </label>
+                                <input type="text" id="anestesiologo" class="form-input"
+                                    placeholder="Nombre del anestesiólogo">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-tools"></i>
+                                    Instrumentista
+                                </label>
+                                <input type="text" id="instrumentista" class="form-input"
+                                    placeholder="Nombre del instrumentista">
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user-nurse"></i>
+                                    Enfermera Circulante
+                                </label>
+                                <input type="text" id="enfermera" class="form-input"
+                                    placeholder="Nombre de la enfermera circulante">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user-md"></i>
+                                    Cirujano Asistente
+                                </label>
+                                <input type="text" id="cirujanoAsistente" class="form-input"
+                                    placeholder="Nombre del cirujano asistente">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <i class="fas fa-users"></i>
+                                Otros Miembros del Equipo
+                            </label>
+                            <textarea id="otrosMiembros" class="form-textarea"
+                                placeholder="Escribe otros miembros del equipo quirúrgico (ej: Técnico en Anestesia, Auxiliares de Enfermería, etc.)"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Descripción y Notas -->
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fas fa-notes-medical"></i>
+                            Descripción y Notas
+                        </label>
+                        <textarea id="descripcion" class="form-textarea"
+                            placeholder="Detalles de la cirugía, preparación especial, notas importantes..."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-modal btn-primary">
+                        <i class="fas fa-save"></i>
+                        Programar Cirugía
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Cirugia Modal -->
+    <div class="cirugia-modal" id="viewCirugiaModal">
+        <div class="cirugia-modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalles de Cirugía</h2>
+                <button class="btn-close-modal" id="closeViewModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="viewCirugiaContent">
+                <!-- Content will be dynamically loaded -->
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-secondary" id="closeViewBtn">
+                    <i class="fas fa-times"></i>
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading, Success, Error, Confirm Modals -->
+    <div class="cirugia-modal" id="loadingModal">
+        <div class="cirugia-modal-content" style="max-width: 350px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="spinner" style="margin: 0 auto 20px;"></div>
+                <p style="color: #2B3545; font-size: 16px; font-weight: 500;">Procesando...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cirugia-modal" id="successModal">
+        <div class="cirugia-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p class="message-text">Operación exitosa</p>
+                <button class="btn-close-message" id="closeSuccess">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cirugia-modal" id="errorModal">
+        <div class="cirugia-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon error">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p class="message-text">Ha ocurrido un error</p>
+                <button class="btn-close-message" id="closeError">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cirugia-modal" id="confirmModal">
+        <div class="cirugia-modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title">¿Eliminar Cirugía?</h2>
+                <button class="btn-close-modal"
+                    onclick="document.getElementById('confirmModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <div style="font-size: 50px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <p class="message-text">Esta acción no se puede deshacer</p>
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button class="btn-modal btn-secondary" id="cancelDelete" style="flex: 1;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-modal" id="confirmDeleteBtn" style="flex: 1; background: #dc3545; color: white;">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="logout-title">¿Cerrar Sesión?</h2>
+            <p class="logout-message">
+                ¿Estás seguro de que deseas cerrar sesión? Podrás volver a iniciar sesión en cualquier momento.
+            </p>
+            <div class="logout-actions">
+                <button class="btn-cancel" id="cancelLogout">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-confirm" id="confirmLogout">
+                    <i class="fas fa-check"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Picker Modal -->
+    <div class="time-picker-modal" id="timePickerModal">
+        <div class="time-picker-content">
+            <h3 class="time-picker-title">SELECCIONAR HORA</h3>
+
+            <div class="time-display-large">
+                <span class="time-hour" id="displayHour">12</span>
+                <span class="time-colon">:</span>
+                <span class="time-minute" id="displayMinute">00</span>
+                <div class="time-period-toggle">
+                    <button type="button" class="period-btn" id="amBtn" data-period="AM">AM</button>
+                    <button type="button" class="period-btn active" id="pmBtn" data-period="PM">PM</button>
+                </div>
+            </div>
+
+            <div class="clock-container">
+                <svg class="clock-face" viewBox="0 0 300 300">
+                    <circle cx="150" cy="150" r="140" fill="#f8f9fa" stroke="#e0e0e0" stroke-width="2" />
+
+                    <!-- Hour numbers (positioned in circle) -->
+                    <text x="150" y="30" text-anchor="middle" dominant-baseline="middle" class="clock-number">12</text>
+                    <text x="221" y="57" text-anchor="middle" dominant-baseline="middle" class="clock-number">1</text>
+                    <text x="270" y="107" text-anchor="middle" dominant-baseline="middle" class="clock-number">2</text>
+                    <text x="270" y="150" text-anchor="middle" dominant-baseline="middle" class="clock-number">3</text>
+                    <text x="270" y="193" text-anchor="middle" dominant-baseline="middle" class="clock-number">4</text>
+                    <text x="221" y="243" text-anchor="middle" dominant-baseline="middle" class="clock-number">5</text>
+                    <text x="150" y="270" text-anchor="middle" dominant-baseline="middle" class="clock-number">6</text>
+                    <text x="79" y="243" text-anchor="middle" dominant-baseline="middle" class="clock-number">7</text>
+                    <text x="30" y="193" text-anchor="middle" dominant-baseline="middle" class="clock-number">8</text>
+                    <text x="30" y="150" text-anchor="middle" dominant-baseline="middle" class="clock-number">9</text>
+                    <text x="30" y="107" text-anchor="middle" dominant-baseline="middle" class="clock-number">10</text>
+                    <text x="79" y="57" text-anchor="middle" dominant-baseline="middle" class="clock-number">11</text>
+
+                    <!-- Clock hand -->
+                    <line id="clockHand" x1="150" y1="150" x2="150" y2="50" stroke="#D11A5C" stroke-width="3"
+                        stroke-linecap="round" />
+                    <circle cx="150" cy="150" r="8" fill="#D11A5C" />
+                    <circle id="clockHandEnd" cx="150" cy="50" r="20" fill="#D11A5C" opacity="0.8" />
+                </svg>
+            </div>
+
+            <div class="time-picker-actions">
+                <button type="button" class="btn-time-cancel" id="timeCancelBtn">CANCELAR</button>
+                <button type="button" class="btn-time-ok" id="timeOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../Componentes/js/Sidebar.js"></script>
+    <script type="module" src="../Componentes/js/Cirugias.js"></script>
+</body>
+
+</html>

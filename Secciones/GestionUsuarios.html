@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - Eva Cirugía Corporal</title>
+    <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
+    <link rel="stylesheet" href="../Componentes/css/GestionUsuarios.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <span class="sidebar-title">EVA Cirugía</span>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="PanelPrincipal.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-home"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Pacientes.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    <span class="menu-text">Pacientes</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="HistoriasClinicas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-file-medical"></i></span>
+                    <span class="menu-text">Historias Clínicas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Cirugias.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-procedures"></i></span>
+                    <span class="menu-text">Cirugías</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Citas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="menu-text">Citas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Tratamientos.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-syringe"></i></span>
+                    <span class="menu-text">Tratamientos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="GestionUsuarios.html" class="menu-link active">
+                    <span class="menu-icon"><i class="fas fa-user-cog"></i></span>
+                    <span class="menu-text">Gestión de Usuarios</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="MiPerfil.html" class="user-profile" style="text-decoration: none;">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Usuario</span>
+                    <span class="user-role" id="userRole">Administrador</span>
+                </div>
+            </a>
+            <div style="margin-top: 10px;">
+                <a href="#" class="menu-link" id="logoutBtn">
+                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="menu-text">Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="usuarios-container">
+            <!-- Header -->
+            <div class="usuarios-header">
+                <div class="header-top">
+                    <h1 class="page-title">Gestión de Usuarios</h1>
+                    <div class="header-actions">
+                        <button class="btn-add" id="addUsuarioBtn">
+                            <i class="fas fa-user-plus"></i>
+                            Nuevo Usuario
+                        </button>
+                        <button class="btn-export" id="exportBtn">
+                            <i class="fas fa-download"></i>
+                            Exportar CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-row">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Buscar por nombre, email o teléfono..."
+                        >
+                        <button class="clear-search" id="clearSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <select class="filter-select" id="especialidadFilter">
+                        <option value="">Todas las especialidades</option>
+                        <option value="Médico General">Médico General</option>
+                        <option value="Cirujano Plástico">Cirujano Plástico</option>
+                        <option value="Anestesiólogo">Anestesiólogo</option>
+                        <option value="Dermatólogo">Dermatólogo</option>
+                        <option value="Cirujano Maxilofacial">Cirujano Maxilofacial</option>
+                        <option value="Medicina Estética">Medicina Estética</option>
+                        <option value="Enfermero/a">Enfermero/a</option>
+                        <option value="Instrumentista">Instrumentista</option>
+                        <option value="Administrador">Administrador</option>
+                    </select>
+
+                    <select class="filter-select" id="statusFilter">
+                        <option value="all">Todos los estados</option>
+                        <option value="active">Activos</option>
+                        <option value="inactive">Inactivos</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="usuarios-stats">
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Total Usuarios</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon active">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="activeUsers">0</h3>
+                        <p>Usuarios Activos</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon inactive">
+                        <i class="fas fa-user-times"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="inactiveUsers">0</h3>
+                        <p>Usuarios Inactivos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="usuarios-table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Lista de Usuarios</h2>
+                    <span class="results-count" id="resultsCount">0 usuarios</span>
+                </div>
+
+                <table class="usuarios-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Especialidad</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px;">
+                                Cargando usuarios...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Security Password Modal -->
+    <div class="user-modal" id="securityModal">
+        <div class="user-modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Contraseña de Seguridad</h2>
+                <button class="btn-close-modal" id="closeSecurityModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 30px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 50px; color: #D11A5C; margin-bottom: 15px;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <p style="color: #6c757d; font-size: 14px;">
+                        Para crear un nuevo usuario, ingresa la contraseña de seguridad del sistema
+                    </p>
+                </div>
+                <form id="securityForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-key"></i>
+                            Contraseña de Seguridad
+                        </label>
+                        <input type="password" id="securityPassword" class="form-input" 
+                               placeholder="Ingresa la contraseña de seguridad" required>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="button" class="btn-modal btn-secondary" id="cancelSecurityBtn" style="flex: 1;">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn-modal btn-primary" style="flex: 1;">
+                            <i class="fas fa-check"></i> Verificar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Detail Modal -->
+    <div class="user-modal" id="userModal">
+        <div class="user-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalles del Usuario</h2>
+                <button class="btn-close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="user-detail-header">
+                    <div class="user-detail-avatar" id="modalUserAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="user-detail-name" id="modalUserName">Nombre Usuario</h3>
+                    <p class="user-detail-email" id="modalUserEmail">email@example.com</p>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label">Especialidad</div>
+                    <div class="detail-value" id="detailEspecialidad">-</div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label">Teléfono</div>
+                    <div class="detail-value" id="detailTelefono">-</div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label">Fecha de Registro</div>
+                    <div class="detail-value" id="detailFechaRegistro">-</div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label">Estado</div>
+                    <div class="detail-value" id="detailEstado">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="user-modal" id="confirmModal">
+        <div class="user-modal-content" style="max-width: 450px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="logout-icon" id="confirmModalIcon">
+                    <i class="fas fa-user-slash"></i>
+                </div>
+                <h2 class="logout-title" id="confirmModalTitle">¿Desactivar Usuario?</h2>
+                <p class="logout-message" id="confirmModalMessage">
+                    ¿Estás seguro de que deseas realizar esta acción?
+                </p>
+                <div class="logout-actions">
+                    <button class="btn-cancel" id="cancelConfirm">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-confirm" id="confirmActionBtn">
+                        <i class="fas fa-check"></i> Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="user-modal" id="loadingModal">
+        <div class="user-modal-content" style="max-width: 350px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="spinner" style="margin: 0 auto 20px;"></div>
+                <p style="color: #2B3545; font-size: 16px; font-weight: 500;">Procesando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="user-modal" id="successModal">
+        <div class="user-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p class="message-text">Operación exitosa</p>
+                <button class="btn-close-message" id="closeSuccess">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="user-modal" id="errorModal">
+        <div class="user-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon error">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p class="message-text">Ha ocurrido un error</p>
+                <button class="btn-close-message" id="closeError">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="logout-title">¿Cerrar Sesión?</h2>
+            <p class="logout-message">
+                ¿Estás seguro de que deseas cerrar sesión? Podrás volver a iniciar sesión en cualquier momento.
+            </p>
+            <div class="logout-actions">
+                <button class="btn-cancel" id="cancelLogout">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-confirm" id="confirmLogout">
+                    <i class="fas fa-check"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../Componentes/js/Sidebar.js"></script>
+    <script type="module" src="../Componentes/js/GestionUsuarios.js"></script>
+</body>
+</html>

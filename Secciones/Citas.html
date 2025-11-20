@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citas - Eva Cirugía Corporal</title>
+    <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
+    <link rel="stylesheet" href="../Componentes/css/Citas.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <span class="sidebar-title">EVA Cirugía</span>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="PanelPrincipal.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-home"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Pacientes.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    <span class="menu-text">Pacientes</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="HistoriasClinicas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-file-medical"></i></span>
+                    <span class="menu-text">Historias Clínicas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Cirugias.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-procedures"></i></span>
+                    <span class="menu-text">Cirugías</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Citas.html" class="menu-link active">
+                    <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="menu-text">Citas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Tratamientos.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-syringe"></i></span>
+                    <span class="menu-text">Tratamientos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="GestionUsuarios.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-user-cog"></i></span>
+                    <span class="menu-text">Gestión de Usuarios</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="MiPerfil.html" class="user-profile" style="text-decoration: none;">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Usuario</span>
+                    <span class="user-role" id="userRole">Administrador</span>
+                </div>
+            </a>
+            <div style="margin-top: 10px;">
+                <a href="#" class="menu-link" id="logoutBtn">
+                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="menu-text">Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="citas-container">
+            <!-- Header -->
+            <div class="citas-header">
+                <div class="header-top">
+                    <h1 class="page-title">Gestión de Citas</h1>
+                    <div class="header-actions">
+                        <button class="btn-view-toggle" id="toggleView">
+                            <i class="fas fa-calendar-alt"></i>
+                            Vista Calendario
+                        </button>
+                        <button class="btn-add" id="addCitaBtn">
+                            <i class="fas fa-plus"></i>
+                            Nueva Cita
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-row">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar por paciente...">
+                        <button class="clear-search" id="clearSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <select id="filterEstado" class="filter-select">
+                        <option value="">Todos los Estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="completada">Completada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                    <input type="date" id="filterFecha" class="filter-select">
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="citas-stats">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #D11A5C 0%, #a01548 100%);">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalCitas">0</h3>
+                        <p>Total Citas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="citasPendientes">0</h3>
+                        <p>Pendientes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="citasConfirmadas">0</h3>
+                        <p>Confirmadas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="citasHoy">0</h3>
+                        <p>Hoy</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List View -->
+            <div class="citas-table-container" id="listView">
+                <div class="table-header">
+                    <h2 class="table-title">Lista de Citas</h2>
+                    <span class="results-count" id="resultsCount">0 citas</span>
+                </div>
+
+                <table class="citas-table">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Fecha y Hora</th>
+                            <th>Tipo de Cita</th>
+                            <th>Médico</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="citasTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px;">
+                                Cargando citas...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Calendar View -->
+            <div class="calendar-container" id="calendarView" style="display: none;">
+                <div class="calendar-header">
+                    <button class="btn-calendar-nav" id="prevMonth">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h2 class="calendar-title" id="calendarTitle">Noviembre 2025</h2>
+                    <button class="btn-calendar-nav" id="nextMonth">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
+                </div>
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <span class="legend-color pendiente"></span>
+                        <span>Pendiente</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color confirmada"></span>
+                        <span>Confirmada</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color completada"></span>
+                        <span>Completada</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Cita Modal -->
+    <div class="cita-modal" id="citaModal">
+        <div class="cita-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Nueva Cita</h2>
+                <button class="btn-close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="citaForm">
+                <div class="modal-body">
+                    <!-- Tipo de Paciente -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-user-tag"></i>
+                            Tipo de Paciente
+                        </h3>
+
+                        <div class="patient-type-selector">
+                            <label class="patient-type-option">
+                                <input type="radio" name="tipoPaciente" value="registrado" checked>
+                                <div class="option-card">
+                                    <i class="fas fa-user-check"></i>
+                                    <span>Paciente Registrado</span>
+                                </div>
+                            </label>
+                            <label class="patient-type-option">
+                                <input type="radio" name="tipoPaciente" value="externo">
+                                <div class="option-card">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span>Paciente Externo</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Paciente Registrado -->
+                    <div class="form-section" id="pacienteRegistradoSection">
+                        <h3 class="section-title">
+                            <i class="fas fa-user-injured"></i>
+                            Seleccionar Paciente
+                        </h3>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Paciente *</label>
+                            <select id="pacienteId" class="form-select">
+                                <option value="">Seleccionar paciente...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Paciente Externo -->
+                    <div class="form-section" id="pacienteExternoSection" style="display: none;">
+                        <h3 class="section-title">
+                            <i class="fas fa-user-plus"></i>
+                            Datos del Paciente Externo
+                        </h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Nombre Completo *</label>
+                                <input type="text" id="nombreExterno" class="form-input" placeholder="Ej: Juan Pérez">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cédula *</label>
+                                <input type="text" id="cedulaExterno" class="form-input" placeholder="Ej: 1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Correo Electrónico *</label>
+                                <input type="email" id="emailExterno" class="form-input"
+                                    placeholder="Ej: juan@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Teléfono *</label>
+                                <input type="tel" id="telefonoExterno" class="form-input" placeholder="Ej: 3001234567">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de la Cita -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Información de la Cita
+                        </h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar"></i>
+                                    Fecha *
+                                </label>
+                                <input type="date" id="fechaCita" class="form-input" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-clock"></i>
+                                    Hora *
+                                </label>
+                                <input type="time" id="horaCita" class="form-input" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Cita *</label>
+                                <select id="tipoCita" class="form-select" required>
+                                    <option value="">Seleccionar tipo...</option>
+                                    <option value="consulta">Consulta General</option>
+                                    <option value="valoracion">Valoración Pre-Quirúrgica</option>
+                                    <option value="control">Control Post-Operatorio</option>
+                                    <option value="procedimiento">Procedimiento</option>
+                                    <option value="seguimiento">Seguimiento</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Duración Estimada *</label>
+                                <select id="duracion" class="form-select" required>
+                                    <option value="30">30 minutos</option>
+                                    <option value="60" selected>1 hora</option>
+                                    <option value="90">1.5 horas</option>
+                                    <option value="120">2 horas</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user-md"></i>
+                                    Médico Asignado *
+                                </label>
+                                <select id="medicoId" class="form-select" required>
+                                    <option value="">Seleccionar médico...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Motivo de la Cita *</label>
+                            <textarea id="motivoCita" class="form-textarea"
+                                placeholder="Describa el motivo de la cita..." required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Notas Adicionales -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-sticky-note"></i>
+                            Notas Adicionales
+                        </h3>
+                        <div class="form-group full-width">
+                            <textarea id="notas" class="form-textarea"
+                                placeholder="Notas internas (no se envían al paciente)..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-modal btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Agendar y Enviar Correo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Cita Modal -->
+    <div class="cita-modal" id="viewCitaModal">
+        <div class="cita-modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalles de la Cita</h2>
+                <button class="btn-close-modal" id="closeViewModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="viewCitaContent">
+                <!-- Content will be dynamically loaded -->
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-secondary" id="closeViewBtn">
+                    <i class="fas fa-times"></i>
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultado de Cita Modal -->
+    <div class="cita-modal" id="resultadoCitaModal">
+        <div class="cita-modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Registrar Resultado de Cita</h2>
+                <button class="btn-close-modal" id="closeResultadoModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="resultadoCitaForm">
+                <div class="modal-body">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Información de la Cita
+                        </h3>
+                        <div id="citaInfoResumen"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-stethoscope"></i>
+                            Diagnóstico y Resultado
+                        </h3>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Diagnóstico *</label>
+                            <textarea id="diagnostico" class="form-textarea" rows="4"
+                                placeholder="Describa el diagnóstico de la cita..." required></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Tratamiento Recomendado *</label>
+                            <textarea id="tratamiento" class="form-textarea" rows="4"
+                                placeholder="Describa el tratamiento recomendado..." required></textarea>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Presión Arterial</label>
+                                <input type="text" id="presionArterial" class="form-input" placeholder="120/80">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Frecuencia Cardíaca</label>
+                                <input type="text" id="frecuenciaCardiaca" class="form-input" placeholder="70 bpm">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Temperatura</label>
+                                <input type="text" id="temperatura" class="form-input" placeholder="36.5°C">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Peso</label>
+                                <input type="text" id="peso" class="form-input" placeholder="70 kg">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Observaciones Adicionales</label>
+                            <textarea id="observacionesResultado" class="form-textarea" rows="3"
+                                placeholder="Notas adicionales sobre la consulta..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Próxima Cita Recomendada</label>
+                            <input type="date" id="proximaCita" class="form-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal btn-secondary" id="cancelResultadoBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-modal btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar y Crear Historia Clínica
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="cita-modal" id="loadingModal">
+        <div class="cita-modal-content" style="max-width: 350px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="spinner" style="margin: 0 auto 20px;"></div>
+                <p style="color: #2B3545; font-size: 16px; font-weight: 500;">Procesando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="cita-modal" id="successModal">
+        <div class="cita-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p class="message-text">Operación exitosa</p>
+                <button class="btn-close-message" id="closeSuccess">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="cita-modal" id="errorModal">
+        <div class="cita-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon error">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p class="message-text">Ha ocurrido un error</p>
+                <button class="btn-close-message" id="closeError">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Cita Modal -->
+    <div class="cita-modal" id="confirmCitaModal">
+        <div class="cita-modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title">¿Confirmar Cita?</h2>
+                <button class="btn-close-modal"
+                    onclick="document.getElementById('confirmCitaModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <div style="font-size: 50px; color: #28a745; margin-bottom: 20px;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p class="message-text">¿Estás seguro de que deseas confirmar esta cita?</p>
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button class="btn-modal btn-secondary" id="cancelConfirmCita" style="flex: 1;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-modal" id="confirmCitaBtn" style="flex: 1; background: #28a745; color: white;">
+                        <i class="fas fa-check"></i> Confirmar Cita
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="cita-modal" id="confirmModal">
+        <div class="cita-modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title">¿Cancelar Cita?</h2>
+                <button class="btn-close-modal"
+                    onclick="document.getElementById('confirmModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <div style="font-size: 50px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <p class="message-text">¿Estás seguro de que deseas cancelar esta cita?</p>
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button class="btn-modal btn-secondary" id="cancelDelete" style="flex: 1;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-modal" id="confirmDeleteBtn" style="flex: 1; background: #dc3545; color: white;">
+                        <i class="fas fa-ban"></i> Cancelar Cita
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="logout-title">¿Cerrar Sesión?</h2>
+            <p class="logout-message">
+                ¿Estás seguro de que deseas cerrar sesión? Podrás volver a iniciar sesión en cualquier momento.
+            </p>
+            <div class="logout-actions">
+                <button class="btn-cancel" id="cancelLogout">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-confirm" id="confirmLogout">
+                    <i class="fas fa-check"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EmailJS SDK - Debe cargarse ANTES de los módulos -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        // Inicializar EmailJS globalmente
+        emailjs.init('ftJ_yzM9vFYMWh7c9');
+    </script>
+    
+    <script type="module" src="../Componentes/js/Sidebar.js"></script>
+    <script type="module" src="../Componentes/js/Citas.js"></script>
+</body>
+
+</html>

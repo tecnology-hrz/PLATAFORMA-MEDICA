@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Principal - Eva Cirugía Corporal</title>
+    <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <span class="sidebar-title">EVA Cirugía</span>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="PanelPrincipal.html" class="menu-link active">
+                    <span class="menu-icon"><i class="fas fa-home"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Pacientes.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    <span class="menu-text">Pacientes</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="HistoriasClinicas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-file-medical"></i></span>
+                    <span class="menu-text">Historias Clínicas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Cirugias.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-procedures"></i></span>
+                    <span class="menu-text">Cirugías</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Citas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="menu-text">Citas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Tratamientos.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-syringe"></i></span>
+                    <span class="menu-text">Tratamientos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="GestionUsuarios.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-user-cog"></i></span>
+                    <span class="menu-text">Gestión de Usuarios</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="MiPerfil.html" class="user-profile" style="text-decoration: none;">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Usuario</span>
+                    <span class="user-role" id="userRole">Administrador</span>
+                </div>
+            </a>
+            <div style="margin-top: 10px;">
+                <a href="#" class="menu-link" id="logoutBtn">
+                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="menu-text">Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1 class="page-title" id="pageTitle">Dashboard</h1>
+            <div class="top-bar-actions">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge"></span>
+                </button>
+                <button class="btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    <span id="pageUserName">Bienvenido</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon pink">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalPacientes">0</div>
+                    <div class="stat-label">Total Pacientes</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-procedures"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="cirugiasRealizadas">0</div>
+                    <div class="stat-label">Cirugías Realizadas</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="citasHoy">0</div>
+                    <div class="stat-label">Citas Hoy</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon red">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="citasPendientes">0</div>
+                    <div class="stat-label">Citas Pendientes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Citas Recientes -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2 class="card-title">Citas Recientes</h2>
+                    <a href="Citas.html" class="card-action">Ver todas</a>
+                </div>
+                <div class="card-body">
+                    <p style="color: #6c757d; text-align: center; padding: 20px;">
+                        Cargando citas...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Cirugías por Tipo -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2 class="card-title">Cirugías por Tipo</h2>
+                    <a href="Cirugias.html" class="card-action">Ver detalles</a>
+                </div>
+                <div class="card-body">
+                    <p style="color: #6c757d; text-align: center; padding: 20px;">
+                        Cargando cirugías...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Logout Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="logout-title">¿Cerrar Sesión?</h2>
+            <p class="logout-message">
+                ¿Estás seguro de que deseas cerrar sesión? Podrás volver a iniciar sesión en cualquier momento.
+            </p>
+            <div class="logout-actions">
+                <button class="btn-cancel" id="cancelLogout">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-confirm" id="confirmLogout">
+                    <i class="fas fa-check"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../Componentes/js/Sidebar.js"></script>
+    <script type="module" src="../Componentes/js/PanelPrincipal.js"></script>
+</body>
+</html>

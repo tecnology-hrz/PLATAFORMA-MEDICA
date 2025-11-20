@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tratamientos - Eva Cirugía Corporal</title>
+    <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
+    <link rel="stylesheet" href="../Componentes/css/Tratamientos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <span class="sidebar-title">EVA Cirugía</span>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="PanelPrincipal.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-home"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Pacientes.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    <span class="menu-text">Pacientes</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="HistoriasClinicas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-file-medical"></i></span>
+                    <span class="menu-text">Historias Clínicas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Cirugias.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-procedures"></i></span>
+                    <span class="menu-text">Cirugías</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Citas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="menu-text">Citas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Tratamientos.html" class="menu-link active">
+                    <span class="menu-icon"><i class="fas fa-syringe"></i></span>
+                    <span class="menu-text">Tratamientos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="GestionUsuarios.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-user-cog"></i></span>
+                    <span class="menu-text">Gestión de Usuarios</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="MiPerfil.html" class="user-profile" style="text-decoration: none;">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Usuario</span>
+                    <span class="user-role" id="userRole">Administrador</span>
+                </div>
+            </a>
+            <div style="margin-top: 10px;">
+                <a href="#" class="menu-link" id="logoutBtn">
+                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="menu-text">Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="tratamientos-container">
+            <!-- Header -->
+            <div class="tratamientos-header">
+                <div class="header-top">
+                    <h1 class="page-title">Gestión de Tratamientos</h1>
+                    <div class="header-actions">
+                        <button class="btn-add" id="addTratamientoBtn">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Tratamiento
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-row">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar por paciente...">
+                        <button class="clear-search" id="clearSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <select id="filterEstado" class="filter-select">
+                        <option value="">Todos los Estados</option>
+                        <option value="En Curso">En Curso</option>
+                        <option value="Completado">Completado</option>
+                        <option value="Suspendido">Suspendido</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="tratamientos-stats">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #D11A5C 0%, #a01548 100%);">
+                        <i class="fas fa-syringe"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalTratamientos">0</h3>
+                        <p>Total Tratamientos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="tratamientosEnCurso">0</h3>
+                        <p>En Curso</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="tratamientosCompletados">0</h3>
+                        <p>Completados</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                        <i class="fas fa-user-injured"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pacientesActivos">0</h3>
+                        <p>Pacientes Activos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="tratamientos-table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Lista de Tratamientos</h2>
+                    <span class="results-count" id="resultsCount">0 tratamientos</span>
+                </div>
+
+                <table class="tratamientos-table">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Tratamiento</th>
+                            <th>Fecha Inicio</th>
+                            <th>Duración</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tratamientosTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px;">
+                                Cargando tratamientos...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Tratamiento Modal -->
+    <div class="tratamiento-modal" id="tratamientoModal">
+        <div class="tratamiento-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Nuevo Tratamiento</h2>
+                <button class="btn-close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="tratamientoForm">
+                <div class="modal-body">
+                    <!-- Paciente -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-user-injured"></i>
+                            Información del Paciente
+                        </h3>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Paciente *</label>
+                            <select id="pacienteId" class="form-select" required>
+                                <option value="">Seleccionar paciente...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Información del Tratamiento -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-syringe"></i>
+                            Detalles del Tratamiento
+                        </h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Tratamiento *</label>
+                                <select id="tipoTratamiento" class="form-select" required>
+                                    <option value="">Seleccionar tipo...</option>
+                                    <option value="Botox">Botox</option>
+                                    <option value="Rellenos Dérmicos">Rellenos Dérmicos</option>
+                                    <option value="Mesoterapia">Mesoterapia</option>
+                                    <option value="Carboxiterapia">Carboxiterapia</option>
+                                    <option value="Plasma Rico en Plaquetas">Plasma Rico en Plaquetas (PRP)</option>
+                                    <option value="Láser">Tratamiento Láser</option>
+                                    <option value="Radiofrecuencia">Radiofrecuencia</option>
+                                    <option value="Criolipólisis">Criolipólisis</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Fecha de Inicio *</label>
+                                <input type="date" id="fechaInicio" class="form-input" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Duración (sesiones) *</label>
+                                <input type="number" id="duracion" class="form-input" min="1" placeholder="Ej: 6"
+                                    required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Frecuencia</label>
+                                <select id="frecuencia" class="form-select">
+                                    <option value="Semanal">Semanal</option>
+                                    <option value="Quincenal">Quincenal</option>
+                                    <option value="Mensual">Mensual</option>
+                                    <option value="Única">Sesión Única</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Descripción del Tratamiento *</label>
+                            <textarea id="descripcion" class="form-textarea" rows="4"
+                                placeholder="Describe el tratamiento, objetivos y procedimiento..." required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Indicaciones -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-notes-medical"></i>
+                            Indicaciones y Observaciones
+                        </h3>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Indicaciones para el Paciente</label>
+                            <textarea id="indicaciones" class="form-textarea" rows="3"
+                                placeholder="Cuidados, recomendaciones, restricciones..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Observaciones Médicas</label>
+                            <textarea id="observaciones" class="form-textarea" rows="3"
+                                placeholder="Notas internas sobre el tratamiento..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-modal btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar Tratamiento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Tratamiento Modal -->
+    <div class="tratamiento-modal" id="viewTratamientoModal">
+        <div class="tratamiento-modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalles del Tratamiento</h2>
+                <button class="btn-close-modal" id="closeViewModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="viewTratamientoContent">
+                <!-- Content will be dynamically loaded -->
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-secondary" id="closeViewBtn">
+                    <i class="fas fa-times"></i>
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="tratamiento-modal" id="loadingModal">
+        <div class="tratamiento-modal-content" style="max-width: 350px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="spinner" style="margin: 0 auto 20px;"></div>
+                <p style="color: #2B3545; font-size: 16px; font-weight: 500;">Procesando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="tratamiento-modal" id="successModal">
+        <div class="tratamiento-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p class="message-text">Operación exitosa</p>
+                <button class="btn-close-message" id="closeSuccess">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="tratamiento-modal" id="errorModal">
+        <div class="tratamiento-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon error">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p class="message-text">Ha ocurrido un error</p>
+                <button class="btn-close-message" id="closeError">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="tratamiento-modal" id="confirmModal">
+        <div class="tratamiento-modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title">¿Eliminar Tratamiento?</h2>
+                <button class="btn-close-modal"
+                    onclick="document.getElementById('confirmModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <div style="font-size: 50px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <p class="message-text">¿Estás seguro de que deseas eliminar este tratamiento?</p>
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button class="btn-modal btn-secondary" id="cancelDelete" style="flex: 1;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-modal" id="confirmDeleteBtn" style="flex: 1; background: #dc3545; color: white;">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="logout-title">¿Cerrar Sesión?</h2>
+            <p class="logout-message">
+                ¿Estás seguro de que deseas cerrar sesión? Podrás volver a iniciar sesión en cualquier momento.
+            </p>
+            <div class="logout-actions">
+                <button class="btn-cancel" id="cancelLogout">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-confirm" id="confirmLogout">
+                    <i class="fas fa-check"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../Componentes/js/Sidebar.js"></script>
+    <script type="module" src="../Componentes/js/Tratamientos.js"></script>
+</body>
+
+</html>

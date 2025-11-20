@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historias Clínicas - Eva Cirugía Corporal</title>
+    <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
+    <link rel="stylesheet" href="../Componentes/css/HistoriasClinicas.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <span class="sidebar-title">EVA Cirugía</span>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="PanelPrincipal.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-home"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Pacientes.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    <span class="menu-text">Pacientes</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="HistoriasClinicas.html" class="menu-link active">
+                    <span class="menu-icon"><i class="fas fa-file-medical"></i></span>
+                    <span class="menu-text">Historias Clínicas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Cirugias.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-procedures"></i></span>
+                    <span class="menu-text">Cirugías</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Citas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="menu-text">Citas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Tratamientos.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-syringe"></i></span>
+                    <span class="menu-text">Tratamientos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="GestionUsuarios.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-user-cog"></i></span>
+                    <span class="menu-text">Gestión de Usuarios</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="MiPerfil.html" class="user-profile" style="text-decoration: none;">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Usuario</span>
+                    <span class="user-role" id="userRole">Administrador</span>
+                </div>
+            </a>
+            <div style="margin-top: 10px;">
+                <a href="#" class="menu-link" id="logoutBtn">
+                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="menu-text">Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="historias-container">
+            <!-- Header -->
+            <div class="historias-header">
+                <div class="header-top">
+                    <h1 class="page-title">Historias Clínicas</h1>
+                    <div class="header-actions">
+                        <button class="btn-add" id="addHistoriaBtn">
+                            <i class="fas fa-plus"></i>
+                            Nueva Historia Clínica
+                        </button>
+                        <button class="btn-export" id="exportAllBtn">
+                            <i class="fas fa-file-pdf"></i>
+                            Exportar PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-row">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar por paciente o diagnóstico...">
+                        <button class="clear-search" id="clearSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <select id="filterPaciente" class="filter-select">
+                        <option value="">Todos los Pacientes</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="historias-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalHistorias">0</h3>
+                        <p>Total Historias</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="historias-table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Lista de Historias Clínicas</h2>
+                    <span class="results-count" id="resultsCount">0 historias</span>
+                </div>
+
+                <table class="historias-table">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Diagnóstico</th>
+                            <th>Fecha</th>
+                            <th>Imágenes</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historiasTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px;">
+                                Cargando historias clínicas...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Historia Modal -->
+    <div class="historia-modal" id="historiaModal">
+        <div class="historia-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Nueva Historia Clínica</h2>
+                <button class="btn-close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="historiaForm">
+                <div class="modal-body">
+                    <!-- Selección de Paciente -->
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fas fa-user-injured"></i>
+                            Paciente *
+                        </label>
+                        <select id="pacienteId" class="form-select" required>
+                            <option value="">Seleccionar paciente...</option>
+                        </select>
+                    </div>
+
+                    <!-- Información Básica -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-clipboard-list"></i>
+                            Información Básica
+                        </h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar"></i>
+                                    Fecha de Consulta *
+                                </label>
+                                <input type="date" id="fechaConsulta" class="form-input" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-stethoscope"></i>
+                                    Diagnóstico Principal *
+                                </label>
+                                <input type="text" id="diagnostico" class="form-input" placeholder="Ej: Liposucción abdominal" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Motivo de Consulta -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-comment-medical"></i>
+                            Motivo de Consulta
+                        </h3>
+                        <div class="form-group full-width">
+                            <textarea id="motivoConsulta" class="form-textarea" placeholder="Describa el motivo de la consulta..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Antecedentes -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-history"></i>
+                            Antecedentes
+                        </h3>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">Antecedentes Personales</label>
+                            <textarea id="antecedentesPersonales" class="form-textarea" placeholder="Enfermedades previas, cirugías anteriores, alergias..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Antecedentes Familiares</label>
+                            <textarea id="antecedentesFamiliares" class="form-textarea" placeholder="Enfermedades hereditarias, condiciones familiares..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Examen Físico -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-user-md"></i>
+                            Examen Físico
+                        </h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Peso (kg)</label>
+                                <input type="number" id="peso" class="form-input" placeholder="70" step="0.1">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Altura (cm)</label>
+                                <input type="number" id="altura" class="form-input" placeholder="170" step="0.1">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Presión Arterial</label>
+                                <input type="text" id="presionArterial" class="form-input" placeholder="120/80">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Frecuencia Cardíaca</label>
+                                <input type="text" id="frecuenciaCardiaca" class="form-input" placeholder="72 lpm">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Observaciones del Examen</label>
+                            <textarea id="examenFisico" class="form-textarea" placeholder="Hallazgos del examen físico..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Plan de Tratamiento -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-notes-medical"></i>
+                            Plan de Tratamiento
+                        </h3>
+                        <div class="form-group full-width">
+                            <textarea id="planTratamiento" class="form-textarea" placeholder="Describa el plan de tratamiento propuesto..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Imágenes -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-images"></i>
+                            Imágenes Clínicas
+                        </h3>
+                        
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Arrastra imágenes aquí o haz clic para seleccionar</p>
+                            <span class="upload-hint">Formatos: JPG, PNG (Máx. 5MB por imagen)</span>
+                            <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+                        </div>
+
+                        <div class="images-preview" id="imagesPreview"></div>
+                    </div>
+
+                    <!-- Observaciones Adicionales -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-sticky-note"></i>
+                            Observaciones Adicionales
+                        </h3>
+                        <div class="form-group full-width">
+                            <textarea id="observaciones" class="form-textarea" placeholder="Notas adicionales..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-modal btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar Historia
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Historia Modal -->
+    <div class="historia-modal" id="viewHistoriaModal">
+        <div class="historia-modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalles de Historia Clínica</h2>
+                <button class="btn-close-modal" id="closeViewModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="viewHistoriaContent">
+                <!-- Content will be dynamically loaded -->
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-secondary" id="closeViewBtn">
+                    <i class="fas fa-times"></i>
+                    Cerrar
+                </button>
+                <button type="button" class="btn-modal btn-primary" id="downloadPdfBtn">
+                    <i class="fas fa-file-pdf"></i>
+                    Descargar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="historia-modal" id="loadingModal">
+        <div class="historia-modal-content" style="max-width: 350px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="spinner" style="margin: 0 auto 20px;"></div>
+                <p style="color: #2B3545; font-size: 16px; font-weight: 500;">Procesando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="historia-modal" id="successModal">
+        <div class="historia-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p class="message-text">Operación exitosa</p>
+                <button class="btn-close-message" id="closeSuccess">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="historia-modal" id="errorModal">
+        <div class="historia-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon error">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p class="message-text">Ha ocurrido un error</p>
+                <button class="btn-close-message" id="closeError">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="historia-modal" id="confirmModal">
+        <div class="historia-modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title">¿Eliminar Historia Clínica?</h2>
+                <button class="btn-close-modal" onclick="document.getElementById('confirmModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <div style="font-size: 50px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <p class="message-text">Esta acción no se puede deshacer</p>
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button class="btn-modal btn-secondary" id="cancelDelete" style="flex: 1;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-modal" id="confirmDeleteBtn" style="flex: 1; background: #dc3545; color: white;">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="logout-title">¿Cerrar Sesión?</h2>
+            <p class="logout-message">
+                ¿Estás seguro de que deseas cerrar sesión? Podrás volver a iniciar sesión en cualquier momento.
+            </p>
+            <div class="logout-actions">
+                <button class="btn-cancel" id="cancelLogout">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-confirm" id="confirmLogout">
+                    <i class="fas fa-check"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script type="module" src="../Componentes/js/Sidebar.js"></script>
+    <script type="module" src="../Componentes/js/HistoriasClinicas.js"></script>
+</body>
+
+</html>

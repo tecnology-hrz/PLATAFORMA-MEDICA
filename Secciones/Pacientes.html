@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pacientes - Eva Cirugía Corporal</title>
+    <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
+    <link rel="stylesheet" href="../Componentes/css/Pacientes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <span class="sidebar-title">EVA Cirugía</span>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="PanelPrincipal.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-home"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Pacientes.html" class="menu-link active">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    <span class="menu-text">Pacientes</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="HistoriasClinicas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-file-medical"></i></span>
+                    <span class="menu-text">Historias Clínicas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Cirugias.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-procedures"></i></span>
+                    <span class="menu-text">Cirugías</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Citas.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="menu-text">Citas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Tratamientos.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-syringe"></i></span>
+                    <span class="menu-text">Tratamientos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="GestionUsuarios.html" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-user-cog"></i></span>
+                    <span class="menu-text">Gestión de Usuarios</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="MiPerfil.html" class="user-profile" style="text-decoration: none;">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Usuario</span>
+                    <span class="user-role" id="userRole">Administrador</span>
+                </div>
+            </a>
+            <div style="margin-top: 10px;">
+                <a href="#" class="menu-link" id="logoutBtn">
+                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="menu-text">Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="pacientes-container">
+            <!-- Header -->
+            <div class="pacientes-header">
+                <div class="header-top">
+                    <h1 class="page-title">Gestión de Pacientes</h1>
+                    <div class="header-actions">
+                        <button class="btn-add" id="addPatientBtn">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Paciente
+                        </button>
+                        <button class="btn-export" id="exportBtn">
+                            <i class="fas fa-download"></i>
+                            Exportar CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-row">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput"
+                            placeholder="Buscar por nombre, cédula, email o teléfono...">
+                        <button class="clear-search" id="clearSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="pacientes-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-injured"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalPatients">0</h3>
+                        <p>Total Pacientes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="pacientes-table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Lista de Pacientes</h2>
+                    <span class="results-count" id="resultsCount">0 pacientes</span>
+                </div>
+
+                <table class="pacientes-table">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Fecha Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientsTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px;">
+                                Cargando pacientes...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Patient Modal -->
+    <div class="patient-modal" id="patientModal">
+        <div class="patient-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Nuevo Paciente</h2>
+                <button class="btn-close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="patientForm">
+                <div class="modal-body">
+                    <div class="photo-upload-section">
+                        <div class="photo-preview-wrapper">
+                            <div class="photo-preview" id="photoPreview">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <label for="patientPhotoInput" class="upload-photo-btn" id="uploadPhotoBtn">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="patientPhotoInput" accept="image/*">
+                        </div>
+                        <p style="color: #6c757d; font-size: 13px;">Foto del Paciente (Opcional)</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user"></i>
+                                Nombre Completo *
+                            </label>
+                            <input type="text" id="nombre" class="form-input" placeholder="Juan Pérez" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-id-card"></i>
+                                Cédula *
+                            </label>
+                            <input type="text" id="cedula" class="form-input" placeholder="1234567890" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-phone"></i>
+                                Teléfono
+                            </label>
+                            <input type="tel" id="telefono" class="form-input" placeholder="+52 123 456 7890">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <input type="email" id="email" class="form-input" placeholder="paciente@email.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-calendar"></i>
+                                Fecha de Nacimiento
+                            </label>
+                            <input type="date" id="fechaNacimiento" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-venus-mars"></i>
+                                Género
+                            </label>
+                            <select id="genero" class="form-select">
+                                <option value="">Seleccionar...</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Dirección
+                        </label>
+                        <input type="text" id="direccion" class="form-input" placeholder="Calle y número">
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-city"></i>
+                                Ciudad
+                            </label>
+                            <input type="text" id="ciudad" class="form-input" placeholder="Ciudad">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-flag"></i>
+                                País
+                            </label>
+                            <input type="text" id="pais" class="form-input" placeholder="País">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-mail-bulk"></i>
+                                Código Postal
+                            </label>
+                            <input type="text" id="codigoPostal" class="form-input" placeholder="12345">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-users"></i>
+                                Estado Civil
+                            </label>
+                            <select id="estadoCivil" class="form-select">
+                                <option value="">Seleccionar...</option>
+                                <option value="Soltero/a">Soltero/a</option>
+                                <option value="Casado/a">Casado/a</option>
+                                <option value="Divorciado/a">Divorciado/a</option>
+                                <option value="Viudo/a">Viudo/a</option>
+                                <option value="Unión Libre">Unión Libre</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-briefcase"></i>
+                                Ocupación
+                            </label>
+                            <input type="text" id="ocupacion" class="form-input" placeholder="Ocupación">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-phone-alt"></i>
+                                Contacto de Emergencia
+                            </label>
+                            <input type="tel" id="contactoEmergencia" class="form-input" placeholder="Teléfono">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fas fa-notes-medical"></i>
+                            Observaciones
+                        </label>
+                        <textarea id="observaciones" class="form-textarea"
+                            placeholder="Notas adicionales sobre el paciente..."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-modal btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="patient-modal" id="loadingModal">
+        <div class="patient-modal-content" style="max-width: 350px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="spinner" style="margin: 0 auto 20px;"></div>
+                <p style="color: #2B3545; font-size: 16px; font-weight: 500;">Procesando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="patient-modal" id="successModal">
+        <div class="patient-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p class="message-text">Operación exitosa</p>
+                <button class="btn-close-message" id="closeSuccess">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="patient-modal" id="errorModal">
+        <div class="patient-modal-content" style="max-width: 400px;">
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                <div class="message-icon error">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p class="message-text">Ha ocurrido un error</p>
+                <button class="btn-close-message" id="closeError">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="patient-modal" id="confirmModal">
+        <div class="patient-modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title">¿Eliminar Paciente?</h2>
+                <button class="btn-close-modal"
+                    onclick="document.getElementById('confirmModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <div style="font-size: 50px; color: #dc3545; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <p class="message-text">Esta acción no se puede deshacer</p>
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button class="btn-modal btn-secondary" id="cancelDelete" style="flex: 1;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-modal" id="confirmDeleteBtn" style="flex: 1; background: #dc3545; color: white;">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Patient Details Modal -->
+    <div class="patient-modal" id="viewPatientModal">
+        <div class="patient-modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalles del Paciente</h2>
+                <button class="btn-close-modal" id="closeViewModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="photo-upload-section">
+                    <div class="photo-preview-wrapper">
+                        <div class="photo-preview" id="viewPatientAvatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h3 style="font-size: 24px; font-weight: 600; color: #2B3545; margin-bottom: 5px;"
+                        id="viewPatientName">Nombre Paciente</h3>
+                    <p style="color: #6c757d; font-size: 14px;">Cédula: <span id="viewPatientCedula">-</span></p>
+                </div>
+
+                <div style="display: grid; gap: 20px;">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <div
+                            style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                            <i class="fas fa-phone" style="margin-right: 8px; color: #D11A5C;"></i>Teléfono
+                        </div>
+                        <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientTelefono">-</div>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <div
+                            style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                            <i class="fas fa-envelope" style="margin-right: 8px; color: #D11A5C;"></i>Email
+                        </div>
+                        <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientEmail">-</div>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <div
+                            style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                            <i class="fas fa-map-marker-alt" style="margin-right: 8px; color: #D11A5C;"></i>Dirección
+                        </div>
+                        <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientDireccion">-
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div
+                                style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                <i class="fas fa-calendar" style="margin-right: 8px; color: #D11A5C;"></i>Fecha
+                                Nacimiento
+                            </div>
+                            <div style="font-size: 15px; color: #2B3545; font-weight: 500;"
+                                id="viewPatientFechaNacimiento">-</div>
+                        </div>
+
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div
+                                style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                <i class="fas fa-venus-mars" style="margin-right: 8px; color: #D11A5C;"></i>Género
+                            </div>
+                            <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientGenero">-
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div
+                                style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                <i class="fas fa-city" style="margin-right: 8px; color: #D11A5C;"></i>Ciudad
+                            </div>
+                            <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientCiudad">-</div>
+                        </div>
+
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div
+                                style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                <i class="fas fa-flag" style="margin-right: 8px; color: #D11A5C;"></i>País
+                            </div>
+                            <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientPais">-</div>
+                        </div>
+
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div
+                                style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                <i class="fas fa-mail-bulk" style="margin-right: 8px; color: #D11A5C;"></i>C.P.
+                            </div>
+                            <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientCodigoPostal">-</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div
+                                style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                <i class="fas fa-users" style="margin-right: 8px; color: #D11A5C;"></i>Estado Civil
+                            </div>
+                            <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientEstadoCivil">-</div>
+                        </div>
+
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div
+                                style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                <i class="fas fa-briefcase" style="margin-right: 8px; color: #D11A5C;"></i>Ocupación
+                            </div>
+                            <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientOcupacion">-</div>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <div
+                            style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                            <i class="fas fa-phone-alt" style="margin-right: 8px; color: #D11A5C;"></i>Contacto de Emergencia
+                        </div>
+                        <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientContactoEmergencia">-</div>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <div
+                            style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                            <i class="fas fa-clock" style="margin-right: 8px; color: #D11A5C;"></i>Fecha de Registro
+                        </div>
+                        <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewPatientFechaRegistro">-
+                        </div>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <div
+                            style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                            <i class="fas fa-notes-medical" style="margin-right: 8px; color: #D11A5C;"></i>Observaciones
+                        </div>
+                        <div style="font-size: 15px; color: #2B3545; font-weight: 500; line-height: 1.6;"
+                            id="viewPatientObservaciones">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="logout-title">¿Cerrar Sesión?</h2>
+            <p class="logout-message">
+                ¿Estás seguro de que deseas cerrar sesión? Podrás volver a iniciar sesión en cualquier momento.
+            </p>
+            <div class="logout-actions">
+                <button class="btn-cancel" id="cancelLogout">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-confirm" id="confirmLogout">
+                    <i class="fas fa-check"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../Componentes/js/Sidebar.js"></script>
+    <script type="module" src="../Componentes/js/Pacientes.js"></script>
+</body>
+
+</html>
