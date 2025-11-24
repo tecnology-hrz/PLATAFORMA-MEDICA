@@ -487,23 +487,23 @@
     <div class="cirugia-modal" id="confirmModal">
         <div class="cirugia-modal-content" style="max-width: 450px;">
             <div class="modal-header">
-                <h2 class="modal-title">¿Eliminar Cirugía?</h2>
+                <h2 class="modal-title" id="confirmModalTitle">¿Eliminar Cirugía?</h2>
                 <button class="btn-close-modal"
                     onclick="document.getElementById('confirmModal').classList.remove('active')">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body" style="padding: 30px; text-align: center;">
-                <div style="font-size: 50px; color: #dc3545; margin-bottom: 20px;">
+                <div style="font-size: 50px; margin-bottom: 20px;" id="confirmModalIcon">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <p class="message-text">Esta acción no se puede deshacer</p>
+                <p class="message-text" id="confirmModalMessage">Esta acción no se puede deshacer</p>
                 <div style="display: flex; gap: 15px; margin-top: 30px;">
                     <button class="btn-modal btn-secondary" id="cancelDelete" style="flex: 1;">
                         <i class="fas fa-times"></i> Cancelar
                     </button>
-                    <button class="btn-modal" id="confirmDeleteBtn" style="flex: 1; background: #dc3545; color: white;">
-                        <i class="fas fa-trash"></i> Eliminar
+                    <button class="btn-modal" id="confirmDeleteBtn" style="flex: 1;">
+                        <i class="fas fa-trash" id="confirmBtnIcon"></i> <span id="confirmBtnText">Eliminar</span>
                     </button>
                 </div>
             </div>

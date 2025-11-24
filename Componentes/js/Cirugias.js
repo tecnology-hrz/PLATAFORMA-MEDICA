@@ -723,6 +723,13 @@ window.markAsCompleted = function (cirugiaId) {
                 console.error('Error updating cirugia:', error);
                 showErrorModal('Error al actualizar la cirugía: ' + error.message);
             }
+        },
+        {
+            icon: 'fas fa-check-circle',
+            iconColor: '#28a745',
+            confirmText: 'Confirmar',
+            confirmIcon: 'fas fa-check',
+            confirmColor: '#28a745'
         }
     );
 };
@@ -834,12 +841,35 @@ function showErrorModal(message) {
     modal.classList.add('active');
 }
 
-function showConfirmModal(title, message, onConfirm) {
+function showConfirmModal(title, message, onConfirm, options = {}) {
     const modal = document.getElementById('confirmModal');
-    modal.querySelector('.modal-title').textContent = title;
-    modal.querySelector('.message-text').textContent = message;
+    const modalTitle = document.getElementById('confirmModalTitle');
+    const modalMessage = document.getElementById('confirmModalMessage');
+    const modalIcon = document.getElementById('confirmModalIcon');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    const confirmBtnIcon = document.getElementById('confirmBtnIcon');
+    const confirmBtnText = document.getElementById('confirmBtnText');
 
-    const confirmBtn = modal.querySelector('#confirmDeleteBtn');
+    // Set title and message
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+
+    // Set icon and color
+    const iconClass = options.icon || 'fas fa-exclamation-triangle';
+    const iconColor = options.iconColor || '#dc3545';
+    modalIcon.innerHTML = `<i class="${iconClass}"></i>`;
+    modalIcon.style.color = iconColor;
+
+    // Set button text, icon and style
+    const btnText = options.confirmText || 'Eliminar';
+    const btnIcon = options.confirmIcon || 'fas fa-trash';
+    const btnColor = options.confirmColor || '#dc3545';
+    
+    confirmBtnIcon.className = btnIcon;
+    confirmBtnText.textContent = btnText;
+    confirmBtn.style.background = btnColor;
+    confirmBtn.style.color = 'white';
+
     confirmBtn.onclick = () => {
         modal.classList.remove('active');
         onConfirm();
