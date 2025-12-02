@@ -528,12 +528,22 @@
 
     <!-- Success Modal -->
     <div class="cita-modal" id="successModal">
-        <div class="cita-modal-content" style="max-width: 400px;">
+        <div class="cita-modal-content" style="max-width: 500px;">
             <div class="modal-body" style="padding: 40px; text-align: center;">
                 <div class="message-icon success">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <p class="message-text">Operación exitosa</p>
+                <p class="message-text" id="successMessage">Operación exitosa</p>
+                <div id="calendarButtonContainer" style="margin-top: 20px; display: none;">
+                    <p style="font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.5;">
+                        <i class="fas fa-info-circle" style="color: #D11A5C;"></i>
+                        El doctor debe estar logueado con su cuenta de Google en el navegador para agregar la cita a su calendario.
+                    </p>
+                    <a id="addToCalendarBtn" href="#" target="_blank" class="btn-modal btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; margin-bottom: 15px;">
+                        <i class="fas fa-calendar-plus"></i>
+                        Agregar al Calendario del Doctor
+                    </a>
+                </div>
                 <button class="btn-close-message" id="closeSuccess">Aceptar</button>
             </div>
         </div>

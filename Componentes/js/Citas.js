@@ -400,7 +400,11 @@ document.getElementById('closeViewBtn').addEventListener('click', () => {
 });
 
 document.getElementById('closeSuccess').addEventListener('click', () => {
-    document.getElementById('successModal').classList.remove('active');
+    const modal = document.getElementById('successModal');
+    const calendarContainer = document.getElementById('calendarButtonContainer');
+    modal.classList.remove('active');
+    // Ocultar el botón de calendario cuando se cierra el modal
+    calendarContainer.style.display = 'none';
 });
 
 document.getElementById('closeError').addEventListener('click', () => {
@@ -414,6 +418,50 @@ document.getElementById('cancelDelete').addEventListener('click', () => {
 document.getElementById('cancelConfirmCita').addEventListener('click', () => {
     document.getElementById('confirmCitaModal').classList.remove('active');
 });
+
+// Generate Google Calendar link
+function generateGoogleCalendarLink(citaData, pacienteData) {
+    // Crear fecha y hora en formato ISO
+    const [year, month, day] = citaData.fechaCita.split('-');
+    const [hours, minutes] = citaData.horaCita.split(':');
+    
+    // Fecha de inicio
+    const startDate = new Date(year, month - 1, day, hours, minutes);
+    
+    // Fecha de fin (agregar duración)
+    const endDate = new Date(startDate);
+    endDate.setMinutes(endDate.getMinutes() + parseInt(citaData.duracion));
+    
+    // Formatear fechas para Google Calendar (formato: YYYYMMDDTHHmmss)
+    const formatGoogleDate = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        const h = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        return `${y}${m}${d}T${h}${min}00`;
+    };
+    
+    const startFormatted = formatGoogleDate(startDate);
+    const endFormatted = formatGoogleDate(endDate);
+    
+    // Crear título y descripción
+    const title = encodeURIComponent(`Cita: ${pacienteData.nombre} - ${getTipoCitaText(citaData.tipoCita)}`);
+    const description = encodeURIComponent(
+        `Paciente: ${pacienteData.nombre}\n` +
+        `Cédula: ${pacienteData.cedula}\n` +
+        `Tipo de Cita: ${getTipoCitaText(citaData.tipoCita)}\n` +
+        `Motivo: ${citaData.motivoCita}\n` +
+        `Duración: ${citaData.duracion} minutos`
+    );
+    
+    // Generar URL de Google Calendar
+    // Nota: Google Calendar abrirá con la cuenta predeterminada del navegador
+    // No es posible forzar una cuenta específica sin usar la API de Google
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startFormatted}/${endFormatted}&details=${description}&sf=true&output=xml`;
+    
+    return googleCalendarUrl;
+}
 
 // Send email using EmailJS
 async function sendAppointmentEmail(citaData, pacienteData, medicoData = null) {
@@ -594,6 +642,9 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
         // Send emails to patient and doctor
         const emailResults = await sendAppointmentEmail(citaData, pacienteData, medicoData);
 
+        // Generate Google Calendar link
+        const googleCalendarLink = generateGoogleCalendarLink(citaData, pacienteData);
+
         document.getElementById('citaModal').classList.remove('active');
         hideLoadingModal();
 
@@ -612,7 +663,7 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
             mensaje += ', pero hubo errores al enviar los correos';
         }
 
-        showSuccessModal(mensaje);
+        showSuccessModalWithCalendar(mensaje, googleCalendarLink);
         await loadCitas();
     } catch (error) {
         hideLoadingModal();
@@ -853,6 +904,25 @@ function showSuccessModal(message) {
 function showErrorModal(message) {
     const modal = document.getElementById('errorModal');
     modal.querySelector('.message-text').textContent = message;
+    modal.classList.add('active');
+}
+
+function showSuccessModalWithCalendar(message, googleCalendarLink) {
+    const modal = document.getElementById('successModal');
+    const messageElement = document.getElementById('successMessage');
+    const calendarContainer = document.getElementById('calendarButtonContainer');
+    const calendarBtn = document.getElementById('addToCalendarBtn');
+    
+    messageElement.textContent = message;
+    
+    // Mostrar el botón de calendario con el enlace
+    if (googleCalendarLink) {
+        calendarBtn.href = googleCalendarLink;
+        calendarContainer.style.display = 'block';
+    } else {
+        calendarContainer.style.display = 'none';
+    }
+    
     modal.classList.add('active');
 }
 

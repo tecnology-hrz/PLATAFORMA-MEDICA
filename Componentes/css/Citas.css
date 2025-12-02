@@ -1141,3 +1141,32 @@ Estilos para el modal de resultado */
         gap: 15px;
     }
 }
+
+/* Botón de Google Calendar */
+#calendarButtonContainer {
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+#addToCalendarBtn {
+    background: linear-gradient(135deg, #D11A5C 0%, #a01548 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(209, 26, 92, 0.3);
+}
+
+#addToCalendarBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(209, 26, 92, 0.4);
+    background: linear-gradient(135deg, #a01548 0%, #D11A5C 100%);
+}
+
+#addToCalendarBtn i {
+    margin-right: 8px;
+}
