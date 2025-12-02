@@ -416,15 +416,20 @@ document.getElementById('cancelConfirmCita').addEventListener('click', () => {
 });
 
 // Send email using EmailJS
-async function sendAppointmentEmail(citaData, pacienteData) {
+async function sendAppointmentEmail(citaData, pacienteData, medicoData = null) {
+    const results = {
+        paciente: { success: false, error: null },
+        medico: { success: false, error: null }
+    };
+
     try {
         // Verificar que EmailJS esté disponible
         if (typeof emailjs === 'undefined') {
             throw new Error('EmailJS no está cargado');
         }
 
-        // Preparar los parámetros del template
-        const templateParams = {
+        // Enviar email al paciente
+        const templateParamsPaciente = {
             to_email: pacienteData.email,
             paciente_nombre: pacienteData.nombre,
             fecha_cita: formatDate(citaData.fechaCita),
@@ -435,24 +440,60 @@ async function sendAppointmentEmail(citaData, pacienteData) {
             medico_nombre: citaData.medicoNombre || 'Por asignar'
         };
 
-        console.log('📧 Enviando email con EmailJS...');
-        console.log('Service ID:', EMAILJS_SERVICE_ID);
-        console.log('Template ID:', EMAILJS_TEMPLATE_ID);
+        console.log('📧 Enviando email al paciente...');
         console.log('To:', pacienteData.email);
 
-        // Enviar email usando EmailJS
-        const response = await emailjs.send(
-            EMAILJS_SERVICE_ID,
-            EMAILJS_TEMPLATE_ID,
-            templateParams,
-            EMAILJS_PUBLIC_KEY
-        );
+        try {
+            const responsePaciente = await emailjs.send(
+                EMAILJS_SERVICE_ID,
+                EMAILJS_TEMPLATE_ID,
+                templateParamsPaciente,
+                EMAILJS_PUBLIC_KEY
+            );
+            console.log('✅ Email enviado al paciente exitosamente');
+            results.paciente.success = true;
+        } catch (error) {
+            console.error('❌ Error al enviar email al paciente:', error);
+            results.paciente.error = error.text || error.message || 'Error desconocido';
+        }
 
-        console.log('✅ Email enviado exitosamente:', response);
-        return { success: true, data: response };
+        // Enviar email al médico si tiene email
+        if (medicoData && medicoData.email) {
+            const templateParamsMedico = {
+                to_email: medicoData.email,
+                medico_nombre: medicoData.nombre,
+                paciente_nombre: pacienteData.nombre,
+                paciente_cedula: pacienteData.cedula,
+                fecha_cita: formatDate(citaData.fechaCita),
+                hora_cita: formatTime(citaData.horaCita),
+                tipo_cita: getTipoCitaText(citaData.tipoCita),
+                motivo_cita: citaData.motivoCita,
+                duracion: citaData.duracion
+            };
+
+            console.log('📧 Enviando email al médico...');
+            console.log('To:', medicoData.email);
+
+            try {
+                const responseMedico = await emailjs.send(
+                    EMAILJS_SERVICE_ID,
+                    EMAILJS_TEMPLATE_ID,
+                    templateParamsMedico,
+                    EMAILJS_PUBLIC_KEY
+                );
+                console.log('✅ Email enviado al médico exitosamente');
+                results.medico.success = true;
+            } catch (error) {
+                console.error('❌ Error al enviar email al médico:', error);
+                results.medico.error = error.text || error.message || 'Error desconocido';
+            }
+        }
+
+        return results;
     } catch (error) {
-        console.error('❌ Error al enviar email:', error);
-        return { success: false, error: error.text || error.message || 'Error desconocido' };
+        console.error('❌ Error general al enviar emails:', error);
+        results.paciente.error = error.text || error.message || 'Error desconocido';
+        return results;
     }
 }
 
@@ -492,7 +533,7 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
 
     let pacienteData = {};
     let medicoData = allUsuarios.find(u => u.id === medicoId);
-    
+
     let citaData = {
         tipoPaciente,
         fechaCita,
@@ -544,24 +585,34 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
         };
     }
 
-    showLoadingModal('Agendando cita y enviando correo...');
+    showLoadingModal('Agendando cita y enviando correos...');
 
     try {
         // Save to Firebase
         await addDoc(collection(db, 'citas'), citaData);
 
-        // Send email
-        const emailResult = await sendAppointmentEmail(citaData, pacienteData);
+        // Send emails to patient and doctor
+        const emailResults = await sendAppointmentEmail(citaData, pacienteData, medicoData);
 
         document.getElementById('citaModal').classList.remove('active');
         hideLoadingModal();
 
-        if (emailResult.success) {
-            showSuccessModal('Cita agendada exitosamente y correo enviado al paciente');
+        // Mostrar resultado según los emails enviados
+        let mensaje = 'Cita agendada exitosamente';
+        if (emailResults.paciente.success && emailResults.medico.success) {
+            mensaje += '. Correos enviados al paciente y al médico';
+        } else if (emailResults.paciente.success) {
+            mensaje += '. Correo enviado al paciente';
+            if (medicoData && medicoData.email) {
+                mensaje += ', pero hubo un error al enviar el correo al médico';
+            }
+        } else if (emailResults.medico.success) {
+            mensaje += '. Correo enviado al médico, pero hubo un error al enviar el correo al paciente';
         } else {
-            showSuccessModal('Cita agendada exitosamente, pero hubo un error al enviar el correo: ' + emailResult.error);
+            mensaje += ', pero hubo errores al enviar los correos';
         }
 
+        showSuccessModal(mensaje);
         await loadCitas();
     } catch (error) {
         hideLoadingModal();
@@ -824,7 +875,7 @@ document.getElementById('confirmLogout').addEventListener('click', () => {
 // Registrar resultado de cita
 let citaActualParaResultado = null;
 
-window.registrarResultado = function(citaId) {
+window.registrarResultado = function (citaId) {
     const cita = allCitas.find(c => c.id === citaId);
     if (!cita) return;
 
@@ -929,7 +980,7 @@ document.getElementById('resultadoCitaForm').addEventListener('submit', async (e
         // Crear historia clínica solo si es paciente registrado
         if (citaActualParaResultado.tipoPaciente === 'registrado') {
             const paciente = allPacientes.find(p => p.id === citaActualParaResultado.pacienteId);
-            
+
             const historiaClinicaData = {
                 pacienteId: citaActualParaResultado.pacienteId || '',
                 pacienteNombre: paciente ? paciente.nombre : '',
@@ -959,7 +1010,7 @@ document.getElementById('resultadoCitaForm').addEventListener('submit', async (e
         document.getElementById('resultadoCitaModal').classList.remove('active');
         hideLoadingModal();
         showSuccessModal('Resultado guardado y historia clínica creada exitosamente');
-        
+
         citaActualParaResultado = null;
         await loadCitas();
     } catch (error) {
@@ -1007,24 +1058,24 @@ document.getElementById('nextMonth').addEventListener('click', () => {
 function renderCalendar() {
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
-    
+
     // Update title
     const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
-    
+
     // Get first day of month and number of days
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    
+
     // Get previous month days
     const prevMonthLastDay = new Date(year, month, 0).getDate();
-    
+
     const calendarGrid = document.getElementById('calendarGrid');
     calendarGrid.innerHTML = '';
-    
+
     // Add day headers
     const dayHeaders = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
     dayHeaders.forEach(day => {
@@ -1033,24 +1084,24 @@ function renderCalendar() {
         header.textContent = day;
         calendarGrid.appendChild(header);
     });
-    
+
     // Add previous month days
     for (let i = startingDayOfWeek - 1; i >= 0; i--) {
         const day = prevMonthLastDay - i;
         const dayElement = createCalendarDay(day, year, month - 1, true);
         calendarGrid.appendChild(dayElement);
     }
-    
+
     // Add current month days
     const today = new Date();
     for (let day = 1; day <= daysInMonth; day++) {
-        const isToday = day === today.getDate() && 
-                       month === today.getMonth() && 
-                       year === today.getFullYear();
+        const isToday = day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear();
         const dayElement = createCalendarDay(day, year, month, false, isToday);
         calendarGrid.appendChild(dayElement);
     }
-    
+
     // Add next month days to complete the grid
     const totalCells = calendarGrid.children.length - 7; // Subtract headers
     const remainingCells = 42 - totalCells; // 6 weeks * 7 days
@@ -1065,21 +1116,21 @@ function createCalendarDay(day, year, month, isOtherMonth, isToday = false) {
     dayElement.className = 'calendar-day';
     if (isOtherMonth) dayElement.classList.add('other-month');
     if (isToday) dayElement.classList.add('today');
-    
+
     const dayNumber = document.createElement('div');
     dayNumber.className = 'calendar-day-number';
     dayNumber.textContent = day;
     dayElement.appendChild(dayNumber);
-    
+
     // Get citas for this day
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const dayCitas = allCitas.filter(cita => cita.fechaCita === dateStr);
-    
+
     // Add citas to day
     dayCitas.forEach(cita => {
         const citaElement = document.createElement('div');
         citaElement.className = `calendar-cita-item ${cita.estado}`;
-        
+
         let pacienteNombre;
         if (cita.tipoPaciente === 'externo') {
             pacienteNombre = cita.nombreExterno;
@@ -1087,7 +1138,7 @@ function createCalendarDay(day, year, month, isOtherMonth, isToday = false) {
             const paciente = allPacientes.find(p => p.id === cita.pacienteId);
             pacienteNombre = paciente ? paciente.nombre.split(' ')[0] : 'Paciente';
         }
-        
+
         citaElement.textContent = `${formatTime(cita.horaCita)} - ${pacienteNombre}`;
         citaElement.onclick = (e) => {
             e.stopPropagation();
@@ -1095,6 +1146,6 @@ function createCalendarDay(day, year, month, isOtherMonth, isToday = false) {
         };
         dayElement.appendChild(citaElement);
     });
-    
+
     return dayElement;
 }
