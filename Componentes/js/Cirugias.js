@@ -490,6 +490,12 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
             cirujanoAsistente: document.getElementById('cirujanoAsistente').value.trim(),
             otrosMiembros: document.getElementById('otrosMiembros').value.trim(),
             descripcion: document.getElementById('descripcion').value.trim(),
+            // Campos CRM
+            sensacionPaciente: document.getElementById('sensacionPaciente').value,
+            nivelIntencion: document.getElementById('nivelIntencion').value,
+            resultadoEsperado: document.getElementById('resultadoEsperado').value,
+            asistencia: document.getElementById('asistencia').value,
+            observacionesSeguimiento: document.getElementById('observacionesSeguimiento').value.trim(),
             fechaCreacion: editingCirugiaId ? allCirugias.find(c => c.id === editingCirugiaId).fechaCreacion : new Date().toISOString()
         };
 
@@ -565,6 +571,13 @@ window.editCirugia = function (cirugiaId) {
     document.getElementById('cirujanoAsistente').value = cirugia.cirujanoAsistente || '';
     document.getElementById('otrosMiembros').value = cirugia.otrosMiembros || '';
     document.getElementById('descripcion').value = cirugia.descripcion || '';
+
+    // Campos CRM
+    document.getElementById('sensacionPaciente').value = cirugia.sensacionPaciente || '';
+    document.getElementById('nivelIntencion').value = cirugia.nivelIntencion || '';
+    document.getElementById('resultadoEsperado').value = cirugia.resultadoEsperado || '';
+    document.getElementById('asistencia').value = cirugia.asistencia || '';
+    document.getElementById('observacionesSeguimiento').value = cirugia.observacionesSeguimiento || '';
 
     document.getElementById('cirugiaModal').classList.add('active');
 };
@@ -656,6 +669,44 @@ window.viewCirugia = function (cirugiaId) {
         <div class="form-section">
             <h3 class="section-title"><i class="fas fa-notes-medical"></i> Descripción y Notas</h3>
             <div style="font-size: 15px; color: #2B3545; font-weight: 500; line-height: 1.6;">${cirugia.descripcion}</div>
+        </div>
+        ` : ''}
+        
+        ${cirugia.sensacionPaciente || cirugia.nivelIntencion || cirugia.resultadoEsperado || cirugia.asistencia || cirugia.observacionesSeguimiento ? `
+        <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-chart-line"></i> Seguimiento y Evaluación del Paciente</h3>
+            <div class="form-grid">
+                ${cirugia.sensacionPaciente ? `
+                <div>
+                    <div class="form-label">Sensación del Paciente</div>
+                    <div style="font-size: 15px; color: #2B3545; font-weight: 500;">${cirugia.sensacionPaciente}</div>
+                </div>
+                ` : ''}
+                ${cirugia.nivelIntencion ? `
+                <div>
+                    <div class="form-label">Nivel de Intención</div>
+                    <div style="font-size: 15px; color: #2B3545; font-weight: 500;">${cirugia.nivelIntencion}</div>
+                </div>
+                ` : ''}
+                ${cirugia.resultadoEsperado ? `
+                <div>
+                    <div class="form-label">Resultado Médico Esperado</div>
+                    <div style="font-size: 15px; color: #2B3545; font-weight: 500;">${cirugia.resultadoEsperado}</div>
+                </div>
+                ` : ''}
+                ${cirugia.asistencia ? `
+                <div>
+                    <div class="form-label">Asistencia</div>
+                    <div style="font-size: 15px; color: #2B3545; font-weight: 500;">${cirugia.asistencia}</div>
+                </div>
+                ` : ''}
+            </div>
+            ${cirugia.observacionesSeguimiento ? `
+            <div style="margin-top: 15px;">
+                <div class="form-label">Observaciones de Seguimiento</div>
+                <div style="font-size: 15px; color: #2B3545; font-weight: 500; line-height: 1.6;">${cirugia.observacionesSeguimiento}</div>
+            </div>
+            ` : ''}
         </div>
         ` : ''}
     `;

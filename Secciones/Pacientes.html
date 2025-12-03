@@ -120,6 +120,24 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
+                    <select id="filterGenero" class="filter-select">
+                        <option value="">Todos los Géneros</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                    <select id="filterNivelIntencion" class="filter-select">
+                        <option value="">Nivel de Intención</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                    </select>
+                    <select id="filterEstadoSeguimiento" class="filter-select">
+                        <option value="">Estado de Seguimiento</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="Completado">Completado</option>
+                    </select>
                 </div>
             </div>
 
@@ -146,9 +164,12 @@
                 <table class="pacientes-table">
                     <thead>
                         <tr>
+                            <th style="width: 50px;"></th>
                             <th>Paciente</th>
                             <th>Teléfono</th>
                             <th>Email</th>
+                            <th>Nivel Intención</th>
+                            <th>Estado Seguimiento</th>
                             <th>Fecha Registro</th>
                             <th>Acciones</th>
                         </tr>
@@ -272,7 +293,33 @@
                                 <i class="fas fa-flag"></i>
                                 País
                             </label>
-                            <input type="text" id="pais" class="form-input" placeholder="País">
+                            <select id="pais" class="form-select">
+                                <option value="">Seleccionar país...</option>
+                                <option value="Colombia">Colombia</option>
+                                <option value="México">México</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Chile">Chile</option>
+                                <option value="Perú">Perú</option>
+                                <option value="Venezuela">Venezuela</option>
+                                <option value="Ecuador">Ecuador</option>
+                                <option value="Bolivia">Bolivia</option>
+                                <option value="Paraguay">Paraguay</option>
+                                <option value="Uruguay">Uruguay</option>
+                                <option value="Brasil">Brasil</option>
+                                <option value="Panamá">Panamá</option>
+                                <option value="Costa Rica">Costa Rica</option>
+                                <option value="Guatemala">Guatemala</option>
+                                <option value="Honduras">Honduras</option>
+                                <option value="El Salvador">El Salvador</option>
+                                <option value="Nicaragua">Nicaragua</option>
+                                <option value="República Dominicana">República Dominicana</option>
+                                <option value="Cuba">Cuba</option>
+                                <option value="Puerto Rico">Puerto Rico</option>
+                                <option value="España">España</option>
+                                <option value="Estados Unidos">Estados Unidos</option>
+                                <option value="Canadá">Canadá</option>
+                                <option value="Otro">Otro</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -315,10 +362,157 @@
                         </div>
                     </div>
 
+                    <!-- Campos CRM / Seguimiento -->
+                    <div class="form-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 25px; border-radius: 15px; margin-top: 25px; border: 2px solid #D11A5C;">
+                        <h3 class="section-title" style="color: #D11A5C; font-size: 20px; margin-bottom: 25px;">
+                            <i class="fas fa-user-friends"></i>
+                            Seguimiento de Cliente Potencial
+                        </h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user-tie"></i>
+                                    Asesor Comercial
+                                </label>
+                                <select id="asesorComercial" class="form-select">
+                                    <option value="">Seleccionar asesor</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user-nurse"></i>
+                                    Atendido Por
+                                </label>
+                                <select id="atendidoPor" class="form-select">
+                                    <option value="">Seleccionar persona</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar-check"></i>
+                                    Fecha de Valoración
+                                </label>
+                                <input type="date" id="fechaValoracion" class="form-input">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-clipboard-check"></i>
+                                    Asistencia
+                                </label>
+                                <select id="asistencia" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Asistió">Asistió</option>
+                                    <option value="No asistió">No asistió</option>
+                                    <option value="Reprogramada">Reprogramada</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-heartbeat"></i>
+                                    Resultado Médico
+                                </label>
+                                <select id="resultadoMedico" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Aprobada">Aprobada</option>
+                                    <option value="Pendiente exámenes">Pendiente exámenes</option>
+                                    <option value="No apta">No apta</option>
+                                    <option value="Observación">Observación</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-thermometer-half"></i>
+                                    Nivel de Intención
+                                </label>
+                                <select id="nivelIntencion" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Baja">Baja</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-smile"></i>
+                                    Sensación del Paciente
+                                </label>
+                                <select id="sensacionPaciente" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Cómoda y segura">Cómoda y segura</option>
+                                    <option value="Nerviosa">Nerviosa</option>
+                                    <option value="Motivada">Motivada</option>
+                                    <option value="Dudosa">Dudosa</option>
+                                    <option value="Emocionada">Emocionada</option>
+                                    <option value="Preocupada">Preocupada</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-directions"></i>
+                                    Próximo Paso Recomendado
+                                </label>
+                                <select id="proximoPaso" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Cotización">Cotización</option>
+                                    <option value="Seguimiento emocional">Seguimiento emocional</option>
+                                    <option value="Exámenes">Exámenes</option>
+                                    <option value="Reagendar">Reagendar</option>
+                                    <option value="Descartar">Descartar</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    Fecha Sugerida de Seguimiento
+                                </label>
+                                <input type="date" id="fechaSeguimiento" class="form-input">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-tasks"></i>
+                                    Estado del Seguimiento
+                                </label>
+                                <select id="estadoSeguimiento" class="form-select">
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="En Proceso">En Proceso</option>
+                                    <option value="Completado">Completado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <i class="fas fa-lightbulb"></i>
+                                Insight Emocional
+                            </label>
+                            <textarea id="insightEmocional" class="form-textarea" rows="2"
+                                placeholder='Ej: "Emocionada, dudosa, preocupada por costos"'></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <i class="fas fa-notes-medical"></i>
+                                Observaciones Médicas
+                            </label>
+                            <textarea id="observacionesMedicas" class="form-textarea" rows="2"
+                                placeholder="Detalles médicos y observaciones..."></textarea>
+                        </div>
+                    </div>
+
                     <div class="form-group full-width">
                         <label class="form-label">
                             <i class="fas fa-notes-medical"></i>
-                            Observaciones
+                            Observaciones Generales
                         </label>
                         <textarea id="observaciones" class="form-textarea"
                             placeholder="Notas adicionales sobre el paciente..."></textarea>
@@ -542,6 +736,108 @@
                         </div>
                         <div style="font-size: 15px; color: #2B3545; font-weight: 500; line-height: 1.6;"
                             id="viewPatientObservaciones">-</div>
+                    </div>
+                </div>
+
+                <!-- Información CRM -->
+                <div id="crmInfoSection" style="display: none; margin-top: 25px; padding-top: 25px; border-top: 2px solid #D11A5C;">
+                    <h3 style="color: #D11A5C; font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-user-friends"></i>
+                        Información de Seguimiento CRM
+                    </h3>
+                    
+                    <div style="display: grid; gap: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-user-tie" style="margin-right: 8px; color: #D11A5C;"></i>Asesor Comercial
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewAsesorComercial">-</div>
+                            </div>
+                            
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-user-nurse" style="margin-right: 8px; color: #D11A5C;"></i>Atendido Por
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewAtendidoPor">-</div>
+                            </div>
+                            
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-calendar-check" style="margin-right: 8px; color: #D11A5C;"></i>Fecha Valoración
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewFechaValoracion">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-clipboard-check" style="margin-right: 8px; color: #D11A5C;"></i>Asistencia
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewAsistencia">-</div>
+                            </div>
+                            
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-heartbeat" style="margin-right: 8px; color: #D11A5C;"></i>Resultado Médico
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewResultadoMedico">-</div>
+                            </div>
+                            
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-thermometer-half" style="margin-right: 8px; color: #D11A5C;"></i>Nivel de Intención
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewNivelIntencion">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-smile" style="margin-right: 8px; color: #D11A5C;"></i>Sensación del Paciente
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewSensacionPaciente">-</div>
+                            </div>
+                            
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-directions" style="margin-right: 8px; color: #D11A5C;"></i>Próximo Paso
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewProximoPaso">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-calendar-alt" style="margin-right: 8px; color: #D11A5C;"></i>Fecha Seguimiento
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewFechaSeguimiento">-</div>
+                            </div>
+                            
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                    <i class="fas fa-tasks" style="margin-right: 8px; color: #D11A5C;"></i>Estado Seguimiento
+                                </div>
+                                <div style="font-size: 15px; color: #2B3545; font-weight: 500;" id="viewEstadoSeguimiento">-</div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                <i class="fas fa-lightbulb" style="margin-right: 8px; color: #D11A5C;"></i>Insight Emocional
+                            </div>
+                            <div style="font-size: 15px; color: #2B3545; font-weight: 500; line-height: 1.6;" id="viewInsightEmocional">-</div>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 5px;">
+                                <i class="fas fa-notes-medical" style="margin-right: 8px; color: #D11A5C;"></i>Observaciones Médicas
+                            </div>
+                            <div style="font-size: 15px; color: #2B3545; font-weight: 500; line-height: 1.6;" id="viewObservacionesMedicas">-</div>
+                        </div>
                     </div>
                 </div>
             </div>

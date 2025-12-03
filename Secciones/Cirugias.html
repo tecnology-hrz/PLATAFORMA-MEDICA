@@ -411,6 +411,83 @@
                         <textarea id="descripcion" class="form-textarea"
                             placeholder="Detalles de la cirugía, preparación especial, notas importantes..."></textarea>
                     </div>
+
+                    <!-- Seguimiento CRM -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-chart-line"></i>
+                            Seguimiento y Evaluación del Paciente
+                        </h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-smile"></i>
+                                    Sensación del Paciente
+                                </label>
+                                <select id="sensacionPaciente" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Cómoda y segura">Cómoda y segura</option>
+                                    <option value="Nerviosa">Nerviosa</option>
+                                    <option value="Motivada">Motivada</option>
+                                    <option value="Dudosa">Dudosa</option>
+                                    <option value="Emocionada">Emocionada</option>
+                                    <option value="Preocupada">Preocupada</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-thermometer-half"></i>
+                                    Nivel de Intención
+                                </label>
+                                <select id="nivelIntencion" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Baja">Baja</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-heartbeat"></i>
+                                    Resultado Médico Esperado
+                                </label>
+                                <select id="resultadoEsperado" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Excelente">Excelente</option>
+                                    <option value="Bueno">Bueno</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="Por evaluar">Por evaluar</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar-check"></i>
+                                    Asistencia
+                                </label>
+                                <select id="asistencia" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Confirmada">Confirmada</option>
+                                    <option value="Pendiente confirmación">Pendiente confirmación</option>
+                                    <option value="No confirmada">No confirmada</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <i class="fas fa-lightbulb"></i>
+                                Observaciones de Seguimiento
+                            </label>
+                            <textarea id="observacionesSeguimiento" class="form-textarea" rows="3"
+                                placeholder="Notas sobre el estado emocional, preocupaciones, expectativas del paciente..."></textarea>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
