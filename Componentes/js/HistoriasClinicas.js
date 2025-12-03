@@ -295,9 +295,13 @@ clearSearchBtn.addEventListener('click', () => {
 
 filterPaciente.addEventListener('change', applyFilters);
 
+const filterMes = document.getElementById('filterMes');
+filterMes.addEventListener('change', applyFilters);
+
 function applyFilters() {
     const searchTerm = searchInput.value.toLowerCase();
     const pacienteId = filterPaciente.value;
+    const mesSeleccionado = filterMes.value;
     
     filteredHistorias = allHistorias.filter(historia => {
         const paciente = allPacientes.find(p => p.id === historia.pacienteId);
@@ -309,7 +313,19 @@ function applyFilters() {
         
         const matchPaciente = !pacienteId || historia.pacienteId === pacienteId;
         
-        return matchSearch && matchPaciente;
+        // Filtro por mes
+        let matchMes = true;
+        if (mesSeleccionado) {
+            const fechaHistoria = historia.fechaConsulta || historia.fechaCita;
+            if (fechaHistoria) {
+                const fechaMes = fechaHistoria.substring(0, 7); // Formato YYYY-MM
+                matchMes = fechaMes === mesSeleccionado;
+            } else {
+                matchMes = false;
+            }
+        }
+        
+        return matchSearch && matchPaciente && matchMes;
     });
     
     renderHistorias();

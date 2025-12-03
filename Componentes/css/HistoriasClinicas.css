@@ -81,7 +81,7 @@ body {
 
 .filters-row {
     display: grid;
-    grid-template-columns: 1fr 250px;
+    grid-template-columns: 1fr auto;
     gap: 15px;
 }
 
@@ -138,6 +138,11 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     background: #FFFFFF;
+    min-width: 200px;
+}
+
+input[type="month"].filter-select {
+    min-width: 180px;
 }
 
 .filter-select:focus {
