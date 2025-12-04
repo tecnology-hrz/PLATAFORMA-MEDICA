@@ -106,6 +106,16 @@
                 <div class="header-top">
                     <h1 class="page-title">Gestión de Citas</h1>
                     <div class="header-actions">
+                        <div class="google-calendar-connection">
+                            <span id="googleCalendarStatus" class="calendar-status disconnected">
+                                <i class="fas fa-exclamation-circle" style="color: #ffc107;"></i>
+                                Google Calendar no conectado
+                            </span>
+                            <button class="btn-connect-calendar" id="connectGoogleCalendar">
+                                <i class="fas fa-calendar-plus"></i>
+                                Conectar Google Calendar
+                            </button>
+                        </div>
                         <button class="btn-view-toggle" id="toggleView">
                             <i class="fas fa-calendar-alt"></i>
                             Vista Calendario

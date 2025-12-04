@@ -1170,3 +1170,87 @@ Estilos para el modal de resultado */
 #addToCalendarBtn i {
     margin-right: 8px;
 }
+
+/* Google Calendar Connection Status */
+.google-calendar-connection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+}
+
+.calendar-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #2B3545;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.calendar-status.connected {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.calendar-status.disconnected {
+    background: rgba(255, 193, 7, 0.1);
+    color: #856404;
+}
+
+.btn-connect-calendar {
+    background: linear-gradient(135deg, #D11A5C 0%, #a01548 100%);
+    color: #FFFFFF;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(209, 26, 92, 0.25);
+    white-space: nowrap;
+}
+
+.btn-connect-calendar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(209, 26, 92, 0.35);
+}
+
+.btn-connect-calendar:active {
+    transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .header-actions {
+        flex-wrap: wrap;
+    }
+    
+    .google-calendar-connection {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 768px) {
+    .google-calendar-connection {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .btn-connect-calendar {
+        width: 100%;
+        justify-content: center;
+    }
+}

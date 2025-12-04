@@ -43,12 +43,50 @@ window.addEventListener('DOMContentLoaded', () => {
         console.log('EmailJS cargado correctamente');
     }
 
+    // Configurar botón de conexión de Google Calendar
+    setupGoogleCalendarButton();
+
     setTimeout(() => {
         loadPacientes();
         loadUsuarios();
         loadCitas();
     }, 100);
 });
+
+// Setup Google Calendar connection button
+function setupGoogleCalendarButton() {
+    const connectBtn = document.getElementById('connectGoogleCalendar');
+    
+    if (!connectBtn) return;
+    
+    connectBtn.addEventListener('click', async () => {
+        try {
+            if (!window.GoogleCalendar || !window.GoogleCalendar.isReady()) {
+                showErrorModal('Google Calendar API aún no está cargado. Por favor, espera unos segundos e inténtalo de nuevo.');
+                return;
+            }
+            
+            showLoadingModal('Conectando con Google Calendar...');
+            
+            await window.GoogleCalendar.authorize();
+            
+            hideLoadingModal();
+            showSuccessModal('¡Google Calendar conectado exitosamente! Ahora puedes agendar citas en el calendario.');
+            
+        } catch (error) {
+            hideLoadingModal();
+            console.error('Error al conectar Google Calendar:', error);
+            showErrorModal('Error al conectar con Google Calendar. Por favor, inténtalo de nuevo.');
+        }
+    });
+    
+    // Check status periodically
+    setInterval(() => {
+        if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
+            window.GoogleCalendar.updateAuthStatus();
+        }
+    }, 2000);
+}
 
 // Load pacientes
 async function loadPacientes() {
@@ -652,9 +690,10 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
         // Send emails to patient and doctor
         const emailResults = await sendAppointmentEmail(citaData, pacienteData, medicoData, citaId);
 
-        // Create Google Calendar Event automatically
+        // Create Google Calendar Event automatically if authorized
+        let calendarSuccess = false;
         try {
-            if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
+            if (window.GoogleCalendar && window.GoogleCalendar.isReady() && window.GoogleCalendar.isAuthorized()) {
                 const startDateTime = window.GoogleCalendar.formatDateTimeForCalendar(citaData.fechaCita, citaData.horaCita);
                 const endDateTime = window.GoogleCalendar.calculateEndTime(startDateTime, parseInt(citaData.duracion));
 
@@ -677,6 +716,9 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
                 });
 
                 console.log('✅ Evento creado en Google Calendar');
+                calendarSuccess = true;
+            } else {
+                console.log('⚠️ Google Calendar no está autorizado. La cita se guardó pero no se agregó al calendario.');
             }
         } catch (calendarError) {
             console.error('⚠️ Error al crear evento en calendario:', calendarError);
@@ -686,17 +728,26 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
         document.getElementById('citaModal').classList.remove('active');
         hideLoadingModal();
 
-        // Mostrar resultado según los emails enviados
-        let mensaje = 'Cita agendada exitosamente y agregada a Google Calendar';
+        // Mostrar resultado según los emails enviados y calendario
+        let mensaje = '✅ Cita agendada exitosamente';
+        
+        // Información del calendario
+        if (calendarSuccess) {
+            mensaje += ' y agregada a Google Calendar';
+        } else if (window.GoogleCalendar && window.GoogleCalendar.isReady() && !window.GoogleCalendar.isAuthorized()) {
+            mensaje += '. ⚠️ Para agregar al calendario, primero debes conectar Google Calendar';
+        }
+        
+        // Información de los correos
         if (emailResults.paciente.success && emailResults.medico.success) {
-            mensaje += '. Correos enviados al paciente y al médico';
+            mensaje += '. 📧 Correos enviados al paciente y al médico';
         } else if (emailResults.paciente.success) {
-            mensaje += '. Correo enviado al paciente';
+            mensaje += '. 📧 Correo enviado al paciente';
             if (medicoData && medicoData.email) {
                 mensaje += ', pero hubo un error al enviar el correo al médico';
             }
         } else if (emailResults.medico.success) {
-            mensaje += '. Correo enviado al médico, pero hubo un error al enviar el correo al paciente';
+            mensaje += '. 📧 Correo enviado al médico, pero hubo un error al enviar el correo al paciente';
         } else {
             mensaje += ', pero hubo errores al enviar los correos';
         }
