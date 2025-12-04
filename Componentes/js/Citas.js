@@ -80,12 +80,38 @@ function setupGoogleCalendarButton() {
         }
     });
     
+    // Intentar restaurar token al cargar la página - múltiples intentos
+    let intentos = 0;
+    const maxIntentos = 5;
+    
+    const intentarRestaurar = setInterval(() => {
+        intentos++;
+        console.log(`🔄 Intento ${intentos} de restaurar token...`);
+        
+        if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
+            console.log('✅ Google Calendar API está lista, restaurando token...');
+            const restaurado = window.GoogleCalendar.restoreToken();
+            
+            if (restaurado || intentos >= maxIntentos) {
+                clearInterval(intentarRestaurar);
+                console.log(restaurado ? '✅ Token restaurado' : '⚠️ No hay token guardado');
+            }
+        } else {
+            console.log('⏳ Esperando que Google Calendar API esté lista...');
+        }
+        
+        if (intentos >= maxIntentos) {
+            clearInterval(intentarRestaurar);
+            console.log('⏹️ Alcanzado máximo de intentos');
+        }
+    }, 800);
+    
     // Check status periodically
     setInterval(() => {
         if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
             window.GoogleCalendar.updateAuthStatus();
         }
-    }, 2000);
+    }, 3000);
 }
 
 // Load pacientes

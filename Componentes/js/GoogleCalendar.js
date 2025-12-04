@@ -21,6 +21,12 @@ async function initializeGapiClient() {
     });
     gapiInited = true;
     console.log('✅ Google API Client initialized');
+    
+    // Intentar restaurar token guardado
+    if (gisInited) {
+        restoreToken();
+    }
+    
     updateAuthStatus();
 }
 
@@ -33,14 +39,81 @@ function gisLoaded() {
     });
     gisInited = true;
     console.log('✅ Google Identity Services initialized');
+    
+    // Intentar restaurar token guardado
+    if (gapiInited) {
+        restoreToken();
+    }
+    
     updateAuthStatus();
 }
 
 // Check if user is authorized
 function checkAuthStatus() {
+    if (!gapiInited) return false;
+    
     const token = gapi.client.getToken();
     isAuthorized = token !== null;
+    
+    // Si hay token, guardarlo en localStorage para persistencia (dura más que sessionStorage)
+    if (token) {
+        try {
+            // Agregar timestamp de expiración si no existe (tokens suelen durar 1 hora)
+            if (!token.expires_at && token.expires_in) {
+                token.expires_at = Date.now() + (token.expires_in * 1000);
+            }
+            localStorage.setItem('google_calendar_token', JSON.stringify(token));
+            console.log('💾 Token guardado en localStorage');
+        } catch (e) {
+            console.warn('No se pudo guardar el token:', e);
+        }
+    }
+    
     return isAuthorized;
+}
+
+// Restore token from localStorage
+function restoreToken() {
+    if (!gapiInited || !gisInited) {
+        console.log('⏳ APIs no están listas aún');
+        return false;
+    }
+    
+    try {
+        const savedToken = localStorage.getItem('google_calendar_token');
+        console.log('🔍 Buscando token guardado...', savedToken ? 'Encontrado' : 'No encontrado');
+        
+        if (savedToken) {
+            const token = JSON.parse(savedToken);
+            
+            // Verificar si el token no ha expirado
+            const now = Date.now();
+            const expiresAt = token.expires_at || 0;
+            
+            console.log('⏰ Verificando expiración:', {
+                now: new Date(now).toLocaleString(),
+                expires: expiresAt ? new Date(expiresAt).toLocaleString() : 'No definido',
+                isValid: expiresAt > now
+            });
+            
+            if (expiresAt > now) {
+                gapi.client.setToken(token);
+                isAuthorized = true;
+                console.log('✅ Token restaurado exitosamente');
+                updateAuthStatus();
+                return true;
+            } else {
+                // Token expirado, limpiarlo
+                localStorage.removeItem('google_calendar_token');
+                console.log('⚠️ Token expirado, se eliminó');
+            }
+        }
+    } catch (e) {
+        console.error('❌ Error al restaurar token:', e);
+        localStorage.removeItem('google_calendar_token');
+    }
+    
+    return false;
 }
 
 // Update UI with auth status
@@ -87,10 +160,20 @@ function authorizeGoogleCalendar() {
                 reject(resp);
                 return;
             }
-            console.log('✅ Autorización exitosa');
-            isAuthorized = true;
-            updateAuthStatus();
-            resolve(resp);
+            
+            console.log('✅ Autorización exitosa, respuesta:', resp);
+            
+            // Esperar un momento para que el token se establezca
+            setTimeout(() => {
+                isAuthorized = true;
+                
+                // Guardar el token inmediatamente después de la autorización
+                const savedToken = checkAuthStatus();
+                console.log('💾 Token guardado después de autorización:', savedToken);
+                
+                updateAuthStatus();
+                resolve(resp);
+            }, 500);
         };
 
         // Always show consent screen to select account
@@ -191,6 +274,25 @@ function calculateEndTime(startDateTime, durationMinutes) {
     return end.toISOString().slice(0, 19);
 }
 
+// Disconnect/revoke token
+function disconnectGoogleCalendar() {
+    try {
+        const token = gapi.client.getToken();
+        if (token) {
+            google.accounts.oauth2.revoke(token.access_token, () => {
+                console.log('Token revocado');
+            });
+            gapi.client.setToken(null);
+        }
+        localStorage.removeItem('google_calendar_token');
+        isAuthorized = false;
+        updateAuthStatus();
+        console.log('✅ Sesión de Google Calendar cerrada');
+    } catch (e) {
+        console.warn('Error al desconectar:', e);
+    }
+}
+
 // Export functions
 window.GoogleCalendar = {
     gapiLoaded,
@@ -203,5 +305,7 @@ window.GoogleCalendar = {
     isReady: () => gapiInited && gisInited,
     isAuthorized: () => checkAuthStatus(),
     authorize: authorizeGoogleCalendar,
+    disconnect: disconnectGoogleCalendar,
+    restoreToken,
     updateAuthStatus
 };
