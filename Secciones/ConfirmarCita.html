@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Cita - EVA Cirugía Corporal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* PÁGINA PÚBLICA - NO REQUIERE AUTENTICACIÓN */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #D11A5C 0%, #a01548 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #D11A5C;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cita-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #2B3545;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .message-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .message-icon.success {
+            color: #28a745;
+        }
+
+        .message-icon.error {
+            color: #dc3545;
+        }
+
+        .message-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2B3545;
+            margin-bottom: 10px;
+        }
+
+        .message-text {
+            font-size: 16px;
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-text {
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-heartbeat"></i> EVA Cirugía Corporal</h1>
+            <p>Confirmación de Cita Médica</p>
+        </div>
+
+        <div class="content" id="content">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p style="color: #6c757d;">Cargando información de la cita...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcNM1AiR8Xn0N-jQokhsbqXyHJi1ozm0w",
+            authDomain: "plataformamedica-d1a7d.firebaseapp.com",
+            projectId: "plataformamedica-d1a7d",
+            storageBucket: "plataformamedica-d1a7d.firebasestorage.app",
+            messagingSenderId: "17741817268",
+            appId: "1:17741817268:web:4556073290256d65c73ee1",
+            measurementId: "G-5W16CTQECZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Get cita ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const citaId = urlParams.get('id');
+
+        if (!citaId) {
+            showError('No se encontró el ID de la cita');
+        } else {
+            loadCita(citaId);
+        }
+
+        async function loadCita(citaId) {
+            try {
+                console.log('🔍 Cargando cita con ID:', citaId);
+                const citaDoc = await getDoc(doc(db, 'citas', citaId));
+                
+                if (!citaDoc.exists()) {
+                    console.error('❌ La cita no existe');
+                    showError('La cita no existe o el enlace es inválido');
+                    return;
+                }
+
+                const cita = citaDoc.data();
+                console.log('✅ Cita cargada:', cita);
+                
+                // Check if already confirmed or cancelled
+                if (cita.estado === 'confirmada') {
+                    showMessage('success', 'Cita Ya Confirmada', 'Esta cita ya fue confirmada anteriormente. ¡Te esperamos!');
+                    return;
+                }
+                
+                if (cita.estado === 'cancelada') {
+                    showMessage('error', 'Cita Cancelada', 'Esta cita fue cancelada. Si deseas reagendar, por favor contáctanos.');
+                    return;
+                }
+
+                showCitaInfo(cita, citaId);
+            } catch (error) {
+                console.error('❌ Error loading cita:', error);
+                console.error('Detalles:', error.message, error.code);
+                showError('Error al cargar la información de la cita. Por favor, intenta nuevamente o contáctanos.');
+            }
+        }
+
+        function showCitaInfo(cita, citaId) {
+            const content = document.getElementById('content');
+            
+            content.innerHTML = `
+                <div class="alert">
+                    <p class="alert-text">
+                        <strong><i class="fas fa-info-circle"></i> Importante:</strong> 
+                        Por favor confirma tu asistencia a la cita o cancélala si no podrás asistir.
+                    </p>
+                </div>
+
+                <div class="cita-info">
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-calendar"></i> Fecha</div>
+                        <div class="info-value">${formatDate(cita.fechaCita)}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-clock"></i> Hora</div>
+                        <div class="info-value">${formatTime(cita.horaCita)}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-hospital"></i> Tipo de Cita</div>
+                        <div class="info-value">${getTipoCitaText(cita.tipoCita)}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-user-md"></i> Médico</div>
+                        <div class="info-value">${cita.medicoNombre || 'Por asignar'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-notes-medical"></i> Motivo</div>
+                        <div class="info-value">${cita.motivoCita}</div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-confirm" id="btnConfirm">
+                        <i class="fas fa-check-circle"></i>
+                        Confirmar Asistencia
+                    </button>
+                    <button class="btn btn-cancel" id="btnCancel">
+                        <i class="fas fa-times-circle"></i>
+                        No Puedo Asistir
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('btnConfirm').addEventListener('click', () => updateCitaEstado(citaId, 'confirmada'));
+            document.getElementById('btnCancel').addEventListener('click', () => updateCitaEstado(citaId, 'cancelada'));
+        }
+
+        async function updateCitaEstado(citaId, nuevoEstado) {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            // Show loading
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p style="color: #6c757d;">Actualizando tu cita...</p>
+                </div>
+            `;
+
+            try {
+                console.log('📝 Actualizando estado a:', nuevoEstado);
+                await updateDoc(doc(db, 'citas', citaId), {
+                    estado: nuevoEstado,
+                    fechaConfirmacion: new Date().toISOString()
+                });
+
+                console.log('✅ Estado actualizado exitosamente');
+
+                if (nuevoEstado === 'confirmada') {
+                    showMessage('success', '¡Cita Confirmada!', 'Tu cita ha sido confirmada exitosamente. Te esperamos en la fecha y hora indicada. Por favor llega 15 minutos antes.');
+                } else {
+                    showMessage('error', 'Cita Cancelada', 'Tu cita ha sido cancelada. Si deseas reagendar, por favor contáctanos al +57 3128151612 o evagrupomedico@gmail.com');
+                }
+            } catch (error) {
+                console.error('❌ Error updating cita:', error);
+                console.error('Detalles:', error.message, error.code);
+                showError('Error al actualizar el estado de la cita. Por favor, intenta nuevamente o contáctanos directamente.');
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        }
+
+        function showMessage(type, title, text) {
+            const content = document.getElementById('content');
+            const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            content.innerHTML = `
+                <div class="message">
+                    <div class="message-icon ${type}">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <h2 class="message-title">${title}</h2>
+                    <p class="message-text">${text}</p>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            showMessage('error', 'Error', message);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('es-ES', options);
+        }
+
+        function formatTime(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        function getTipoCitaText(tipo) {
+            const tipos = {
+                'consulta': 'Consulta General',
+                'valoracion': 'Valoración Pre-Quirúrgica',
+                'control': 'Control Post-Operatorio',
+                'procedimiento': 'Procedimiento',
+                'seguimiento': 'Seguimiento'
+            };
+            return tipos[tipo] || tipo;
+        }
+    </script>
+</body>
+</html>

@@ -18,7 +18,8 @@ const db = getFirestore(app);
 // EmailJS Configuration
 const EMAILJS_PUBLIC_KEY = 'ftJ_yzM9vFYMWh7c9';
 const EMAILJS_SERVICE_ID = 'service_05gh2s1';
-const EMAILJS_TEMPLATE_ID = 'template_ch80ert';
+const EMAILJS_TEMPLATE_ID_PACIENTE = 'template_ch80ert';
+const EMAILJS_TEMPLATE_ID_MEDICO = 'template_1a310fx';
 
 let allCitas = [];
 let filteredCitas = [];
@@ -464,7 +465,7 @@ function generateGoogleCalendarLink(citaData, pacienteData) {
 }
 
 // Send email using EmailJS
-async function sendAppointmentEmail(citaData, pacienteData, medicoData = null) {
+async function sendAppointmentEmail(citaData, pacienteData, medicoData = null, citaId = null) {
     const results = {
         paciente: { success: false, error: null },
         medico: { success: false, error: null }
@@ -485,7 +486,8 @@ async function sendAppointmentEmail(citaData, pacienteData, medicoData = null) {
             tipo_cita: getTipoCitaText(citaData.tipoCita),
             motivo_cita: citaData.motivoCita,
             duracion: citaData.duracion,
-            medico_nombre: citaData.medicoNombre || 'Por asignar'
+            medico_nombre: citaData.medicoNombre || 'Por asignar',
+            cita_id: citaId || ''
         };
 
         console.log('📧 Enviando email al paciente...');
@@ -494,7 +496,7 @@ async function sendAppointmentEmail(citaData, pacienteData, medicoData = null) {
         try {
             const responsePaciente = await emailjs.send(
                 EMAILJS_SERVICE_ID,
-                EMAILJS_TEMPLATE_ID,
+                EMAILJS_TEMPLATE_ID_PACIENTE,
                 templateParamsPaciente,
                 EMAILJS_PUBLIC_KEY
             );
@@ -506,6 +508,7 @@ async function sendAppointmentEmail(citaData, pacienteData, medicoData = null) {
         }
 
         // Enviar email al médico si tiene email
+        console.log('🔍 Verificando datos del médico:', medicoData);
         if (medicoData && medicoData.email) {
             const templateParamsMedico = {
                 to_email: medicoData.email,
@@ -521,20 +524,26 @@ async function sendAppointmentEmail(citaData, pacienteData, medicoData = null) {
 
             console.log('📧 Enviando email al médico...');
             console.log('To:', medicoData.email);
+            console.log('Template ID:', EMAILJS_TEMPLATE_ID_MEDICO);
+            console.log('Parámetros:', templateParamsMedico);
 
             try {
                 const responseMedico = await emailjs.send(
                     EMAILJS_SERVICE_ID,
-                    EMAILJS_TEMPLATE_ID,
+                    EMAILJS_TEMPLATE_ID_MEDICO,
                     templateParamsMedico,
                     EMAILJS_PUBLIC_KEY
                 );
                 console.log('✅ Email enviado al médico exitosamente');
+                console.log('Respuesta:', responseMedico);
                 results.medico.success = true;
             } catch (error) {
                 console.error('❌ Error al enviar email al médico:', error);
+                console.error('Detalles del error:', error.text, error.message);
                 results.medico.error = error.text || error.message || 'Error desconocido';
             }
+        } else {
+            console.log('⚠️ No se enviará email al médico:', !medicoData ? 'medicoData es null' : 'médico no tiene email');
         }
 
         return results;
@@ -637,10 +646,11 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
 
     try {
         // Save to Firebase
-        await addDoc(collection(db, 'citas'), citaData);
+        const citaRef = await addDoc(collection(db, 'citas'), citaData);
+        const citaId = citaRef.id;
 
         // Send emails to patient and doctor
-        const emailResults = await sendAppointmentEmail(citaData, pacienteData, medicoData);
+        const emailResults = await sendAppointmentEmail(citaData, pacienteData, medicoData, citaId);
 
         // Generate Google Calendar link
         const googleCalendarLink = generateGoogleCalendarLink(citaData, pacienteData);
@@ -1219,3 +1229,52 @@ function createCalendarDay(day, year, month, isOtherMonth, isToday = false) {
 
     return dayElement;
 }
+
+
+// TEST FUNCTION - Enviar email de prueba al médico
+window.testEmailMedico = async function() {
+    console.log('🧪 Iniciando prueba de email al médico...');
+    
+    // Datos de prueba
+    const citaDataTest = {
+        fechaCita: '2025-12-10',
+        horaCita: '14:30',
+        tipoCita: 'consulta',
+        motivoCita: 'Consulta de prueba para verificar envío de emails',
+        duracion: '30',
+        medicoNombre: 'Dr. Prueba'
+    };
+    
+    const pacienteDataTest = {
+        nombre: 'Paciente de Prueba',
+        email: 'paciente@test.com',
+        cedula: '1234567890'
+    };
+    
+    const medicoDataTest = {
+        nombre: 'Dr. Andrés Hernández',
+        email: 'hrzandres009@gmail.com'
+    };
+    
+    console.log('📋 Datos de prueba:', {
+        cita: citaDataTest,
+        paciente: pacienteDataTest,
+        medico: medicoDataTest
+    });
+    
+    try {
+        const results = await sendAppointmentEmail(citaDataTest, pacienteDataTest, medicoDataTest);
+        console.log('📊 Resultados:', results);
+        
+        if (results.medico.success) {
+            alert('✅ Email de prueba enviado al médico exitosamente! Revisa la consola para más detalles.');
+        } else {
+            alert('❌ Error al enviar email al médico: ' + results.medico.error);
+        }
+    } catch (error) {
+        console.error('❌ Error en la prueba:', error);
+        alert('❌ Error en la prueba: ' + error.message);
+    }
+};
+
+console.log('💡 Para probar el envío de email al médico, ejecuta en la consola: testEmailMedico()');
