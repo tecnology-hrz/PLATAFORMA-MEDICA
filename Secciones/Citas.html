@@ -8,6 +8,13 @@
     <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
     <link rel="stylesheet" href="../Componentes/css/Citas.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Calendar API - Load GoogleCalendar.js first -->
+    <script src="../Componentes/js/GoogleCalendar.js"></script>
+    <script src="https://apis.google.com/js/api.js" async defer
+        onload="if(window.GoogleCalendar) GoogleCalendar.gapiLoaded()"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer
+        onload="if(window.GoogleCalendar) GoogleCalendar.gisLoaded()"></script>
 </head>
 
 <body>
@@ -537,9 +544,11 @@
                 <div id="calendarButtonContainer" style="margin-top: 20px; display: none;">
                     <p style="font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.5;">
                         <i class="fas fa-info-circle" style="color: #D11A5C;"></i>
-                        El doctor debe estar logueado con su cuenta de Google en el navegador para agregar la cita a su calendario.
+                        El doctor debe estar logueado con su cuenta de Google en el navegador para agregar la cita a su
+                        calendario.
                     </p>
-                    <a id="addToCalendarBtn" href="#" target="_blank" class="btn-modal btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; margin-bottom: 15px;">
+                    <a id="addToCalendarBtn" href="#" target="_blank" class="btn-modal btn-primary"
+                        style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; margin-bottom: 15px;">
                         <i class="fas fa-calendar-plus"></i>
                         Agregar al Calendario del Doctor
                     </a>
@@ -643,7 +652,7 @@
         // Inicializar EmailJS globalmente
         emailjs.init('ftJ_yzM9vFYMWh7c9');
     </script>
-    
+
     <script type="module" src="../Componentes/js/Sidebar.js"></script>
     <script type="module" src="../Componentes/js/Citas.js"></script>
 </body>
