@@ -191,10 +191,11 @@ function populateCirujanoSelect() {
     const select = document.getElementById('cirujanoId');
     select.innerHTML = '<option value="">Seleccionar cirujano</option>';
 
-    // Filtrar SOLO cirujanos (que tengan "Cirujano" en su especialidad)
+    // Filtrar SOLO cirujanos (que tengan "Cirujano" o "Director Médico" en su especialidad)
     const cirujanos = allUsuarios.filter(usuario => {
         const especialidad = usuario.especialidad || usuario.rol || usuario.tipoUsuario || '';
-        return especialidad.toLowerCase().includes('cirujano');
+        const especialidadLower = especialidad.toLowerCase();
+        return especialidadLower.includes('cirujano') || especialidadLower.includes('director médico') || especialidadLower.includes('director medico');
     });
 
     cirujanos.forEach(usuario => {
