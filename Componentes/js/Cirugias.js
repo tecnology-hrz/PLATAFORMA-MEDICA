@@ -33,6 +33,9 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Configurar botón de conexión de Google Calendar
+    setupGoogleCalendarButton();
+
     setTimeout(() => {
         loadPacientes();
         loadUsuarios();
@@ -40,6 +43,101 @@ window.addEventListener('DOMContentLoaded', () => {
         startAutoUpdateStates();
     }, 100);
 });
+
+// Setup Google Calendar connection button
+function setupGoogleCalendarButton() {
+    const connectBtn = document.getElementById('connectGoogleCalendar');
+    
+    if (!connectBtn) return;
+    
+    connectBtn.addEventListener('click', async () => {
+        try {
+            // Si la API no está lista, esperamos hasta que lo esté
+            if (!window.GoogleCalendar || !window.GoogleCalendar.isReady()) {
+                showLoadingModal('Esperando que Google Calendar API se cargue...');
+                
+                // Esperamos hasta 10 segundos para que la API se cargue
+                let intentosEspera = 0;
+                const maxIntentosEspera = 20; // 20 * 500ms = 10 segundos
+                
+                while ((!window.GoogleCalendar || !window.GoogleCalendar.isReady()) && intentosEspera < maxIntentosEspera) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    intentosEspera++;
+                    console.log(`⏳ Esperando carga de API (intento ${intentosEspera}/${maxIntentosEspera})...`);
+                }
+                
+                if (!window.GoogleCalendar || !window.GoogleCalendar.isReady()) {
+                    hideLoadingModal();
+                    showErrorModal('Google Calendar API no se pudo cargar. Por favor, recarga la página e inténtalo de nuevo.');
+                    return;
+                }
+            }
+            
+            showLoadingModal('Conectando con Google Calendar...');
+            
+            await window.GoogleCalendar.authorize();
+            
+            hideLoadingModal();
+            showSuccessModal('¡Google Calendar conectado exitosamente! Ahora las cirugías se agregarán automáticamente al calendario.');
+            
+        } catch (error) {
+            hideLoadingModal();
+            console.error('Error al conectar Google Calendar:', error);
+            showErrorModal('Error al conectar con Google Calendar. Por favor, inténtalo de nuevo.');
+        }
+    });
+    
+    // Mostrar estado de carga inicial
+    updateCalendarLoadingStatus();
+    
+    // Intentar restaurar token al cargar la página - múltiples intentos
+    let intentos = 0;
+    const maxIntentos = 10; // Aumentado a 10 intentos
+    
+    const intentarRestaurar = setInterval(() => {
+        intentos++;
+        console.log(`🔄 Intento ${intentos} de restaurar token...`);
+        
+        if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
+            console.log('✅ Google Calendar API está lista, restaurando token...');
+            const restaurado = window.GoogleCalendar.restoreToken();
+            
+            clearInterval(intentarRestaurar);
+            console.log(restaurado ? '✅ Token restaurado' : '⚠️ No hay token guardado');
+            updateCalendarLoadingStatus(true);
+        } else {
+            console.log('⏳ Esperando que Google Calendar API esté lista...');
+            updateCalendarLoadingStatus();
+        }
+        
+        if (intentos >= maxIntentos) {
+            clearInterval(intentarRestaurar);
+            console.log('⏹️ Alcanzado máximo de intentos para restaurar token');
+            updateCalendarLoadingStatus(true);
+        }
+    }, 1000); // Aumentado a 1 segundo entre intentos
+    
+    // Check status periodically
+    setInterval(() => {
+        if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
+            window.GoogleCalendar.updateAuthStatus();
+        }
+    }, 3000);
+}
+
+// Actualizar estado de carga de Google Calendar
+function updateCalendarLoadingStatus(loaded = false) {
+    const statusElement = document.getElementById('googleCalendarStatus');
+    if (!statusElement) return;
+    
+    if (!loaded && (!window.GoogleCalendar || !window.GoogleCalendar.isReady())) {
+        statusElement.innerHTML = `
+            <i class="fas fa-spinner fa-spin" style="color: #3498db;"></i>
+            Cargando API...
+        `;
+        statusElement.className = 'calendar-status loading';
+    }
+}
 
 // Load pacientes
 async function loadPacientes() {
@@ -474,7 +572,7 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
     const horaCirugia = `${String(hora24).padStart(2, '0')}:${minuto}`;
     const fechaHora = `${fechaCirugia}T${horaCirugia}`;
 
-    showLoadingModal(editingCirugiaId ? 'Actualizando cirugía...' : 'Programando cirugía...');
+    showLoadingModal(editingCirugiaId ? 'Actualizando cirugía y calendario...' : 'Programando cirugía y creando evento en calendario...');
 
     try {
         const cirugiaData = {
@@ -499,15 +597,85 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
             fechaCreacion: editingCirugiaId ? allCirugias.find(c => c.id === editingCirugiaId).fechaCreacion : new Date().toISOString()
         };
 
+        let cirugiaId;
         if (editingCirugiaId) {
             await updateDoc(doc(db, 'cirugias', editingCirugiaId), cirugiaData);
+            cirugiaId = editingCirugiaId;
         } else {
-            await addDoc(collection(db, 'cirugias'), cirugiaData);
+            const cirugiaRef = await addDoc(collection(db, 'cirugias'), cirugiaData);
+            cirugiaId = cirugiaRef.id;
+        }
+
+        // Obtener datos del paciente y cirujano para el evento
+        const paciente = allPacientes.find(p => p.id === pacienteId);
+        const cirujano = allUsuarios.find(u => u.id === cirujanoId);
+
+        // Crear evento en Google Calendar automáticamente si está autorizado
+        let calendarSuccess = false;
+        try {
+            if (window.GoogleCalendar && window.GoogleCalendar.isReady() && window.GoogleCalendar.isAuthorized()) {
+                const startDateTime = window.GoogleCalendar.formatDateTimeForCalendar(fechaCirugia, horaCirugia);
+                const duracionHoras = parseFloat(duracion);
+                const duracionMinutos = Math.round(duracionHoras * 60);
+                const endDateTime = window.GoogleCalendar.calculateEndTime(startDateTime, duracionMinutos);
+
+                // Construir descripción detallada
+                let descripcionCompleta = `Paciente: ${paciente ? paciente.nombre : 'N/A'}`;
+                if (paciente && paciente.cedula) descripcionCompleta += `\nCédula: ${paciente.cedula}`;
+                if (paciente && paciente.telefono) descripcionCompleta += `\nTeléfono: ${paciente.telefono}`;
+                descripcionCompleta += `\n\nTipo de Cirugía: ${tipoCirugia}`;
+                descripcionCompleta += `\nCirujano Principal: ${cirujano ? cirujano.nombre : 'No asignado'}`;
+                descripcionCompleta += `\nDuración Estimada: ${duracion} horas`;
+                
+                if (cirugiaData.anestesiologo) descripcionCompleta += `\n\nEquipo Quirúrgico:\nAnestesiólogo: ${cirugiaData.anestesiologo}`;
+                if (cirugiaData.instrumentista) descripcionCompleta += `\nInstrumentista: ${cirugiaData.instrumentista}`;
+                if (cirugiaData.enfermera) descripcionCompleta += `\nEnfermera Circulante: ${cirugiaData.enfermera}`;
+                if (cirugiaData.cirujanoAsistente) descripcionCompleta += `\nCirujano Asistente: ${cirugiaData.cirujanoAsistente}`;
+                if (cirugiaData.descripcion) descripcionCompleta += `\n\nNotas: ${cirugiaData.descripcion}`;
+
+                // Preparar lista de asistentes
+                const attendees = [];
+                if (paciente && paciente.email) attendees.push({ email: paciente.email });
+                if (cirujano && cirujano.email) attendees.push({ email: cirujano.email });
+
+                const eventDetails = {
+                    summary: `Cirugía: ${tipoCirugia} - ${paciente ? paciente.nombre : 'Paciente'}`,
+                    description: descripcionCompleta,
+                    startDateTime: startDateTime,
+                    endDateTime: endDateTime,
+                    attendees: attendees
+                };
+
+                const calendarEvent = await window.GoogleCalendar.createCalendarEvent(eventDetails);
+                
+                // Guardar el ID del evento de Google Calendar en Firebase
+                await updateDoc(doc(db, 'cirugias', cirugiaId), {
+                    googleCalendarEventId: calendarEvent.id
+                });
+
+                console.log('✅ Evento creado en Google Calendar');
+                calendarSuccess = true;
+            } else {
+                console.log('⚠️ Google Calendar no está autorizado. La cirugía se guardó pero no se agregó al calendario.');
+            }
+        } catch (calendarError) {
+            console.error('⚠️ Error al crear evento en calendario:', calendarError);
+            // No bloqueamos el flujo si falla el calendario
         }
 
         document.getElementById('cirugiaModal').classList.remove('active');
         hideLoadingModal();
-        showSuccessModal(editingCirugiaId ? 'Cirugía actualizada exitosamente' : 'Cirugía programada exitosamente');
+
+        // Mostrar resultado según el calendario
+        let mensaje = editingCirugiaId ? '✅ Cirugía actualizada exitosamente' : '✅ Cirugía programada exitosamente';
+        
+        if (calendarSuccess) {
+            mensaje += ' y agregada a Google Calendar';
+        } else if (window.GoogleCalendar && window.GoogleCalendar.isReady() && !window.GoogleCalendar.isAuthorized()) {
+            mensaje += '. ⚠️ Para agregar al calendario, primero debes conectar Google Calendar';
+        }
+
+        showSuccessModal(mensaje);
 
         await loadCirugias();
         if (currentView === 'calendar') {
@@ -795,11 +963,22 @@ window.deleteCirugia = function (cirugiaId) {
 
     showConfirmModal(
         '¿Eliminar Cirugía?',
-        `¿Estás seguro de que deseas eliminar la cirugía de ${pacienteNombre}? Esta acción no se puede deshacer.`,
+        `¿Estás seguro de que deseas eliminar la cirugía de ${pacienteNombre}? Esta acción no se puede deshacer y también se eliminará del calendario.`,
         async () => {
-            showLoadingModal('Eliminando cirugía...');
+            showLoadingModal('Eliminando cirugía y evento del calendario...');
 
             try {
+                // Eliminar evento de Google Calendar si existe
+                if (cirugia.googleCalendarEventId && window.GoogleCalendar && window.GoogleCalendar.isReady() && window.GoogleCalendar.isAuthorized()) {
+                    try {
+                        await window.GoogleCalendar.deleteCalendarEvent(cirugia.googleCalendarEventId);
+                        console.log('✅ Evento eliminado de Google Calendar');
+                    } catch (calendarError) {
+                        console.warn('⚠️ No se pudo eliminar el evento del calendario:', calendarError);
+                        // No bloqueamos el flujo si falla eliminar del calendario
+                    }
+                }
+
                 await deleteDoc(doc(db, 'cirugias', cirugiaId));
                 hideLoadingModal();
                 showSuccessModal('Cirugía eliminada exitosamente');

@@ -99,6 +99,16 @@
                 <div class="header-top">
                     <h1 class="page-title">Gestión de Cirugías</h1>
                     <div class="header-actions">
+                        <div class="google-calendar-connection">
+                            <span id="googleCalendarStatus" class="calendar-status disconnected">
+                                <i class="fas fa-exclamation-circle" style="color: #ffc107;"></i>
+                                Google Calendar no conectado
+                            </span>
+                            <button class="btn-connect-calendar" id="connectGoogleCalendar">
+                                <i class="fas fa-calendar-plus"></i>
+                                Conectar Google Calendar
+                            </button>
+                        </div>
                         <button class="btn-view-toggle" id="toggleView">
                             <i class="fas fa-calendar-alt"></i>
                             Vista Calendario
@@ -658,6 +668,19 @@
         </div>
     </div>
 
+    <!-- Google Calendar Integration - Orden importante -->
+    <!-- 1. Primero cargamos nuestro módulo GoogleCalendar -->
+    <script src="../Componentes/js/GoogleCalendar.js"></script>
+    
+    <!-- 2. Luego cargamos las APIs de Google que llamarán a los callbacks -->
+    <script async defer src="https://apis.google.com/js/api.js" 
+            onload="if(window.GoogleCalendar) window.GoogleCalendar.gapiLoaded(); else console.warn('GoogleCalendar no disponible aún');">
+    </script>
+    <script async defer src="https://accounts.google.com/gsi/client" 
+            onload="if(window.GoogleCalendar) window.GoogleCalendar.gisLoaded(); else console.warn('GoogleCalendar no disponible aún');">
+    </script>
+    
+    <!-- 3. Finalmente cargamos nuestros módulos -->
     <script type="module" src="../Componentes/js/Sidebar.js"></script>
     <script type="module" src="../Componentes/js/Cirugias.js"></script>
 </body>
