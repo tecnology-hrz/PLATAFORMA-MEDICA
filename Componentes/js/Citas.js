@@ -1165,28 +1165,48 @@ document.getElementById('resultadoCitaForm').addEventListener('submit', async (e
         // Crear historia clínica solo si es paciente registrado
         if (citaActualParaResultado.tipoPaciente === 'registrado') {
             const paciente = allPacientes.find(p => p.id === citaActualParaResultado.pacienteId);
+            const medico = allUsuarios.find(u => u.id === citaActualParaResultado.medicoId);
 
             const historiaClinicaData = {
                 pacienteId: citaActualParaResultado.pacienteId || '',
-                pacienteNombre: paciente ? paciente.nombre : '',
-                pacienteCedula: paciente ? paciente.cedula : '',
-                citaId: citaActualParaResultado.id || '',
-                tipoCita: citaActualParaResultado.tipoCita || '',
-                fechaCita: citaActualParaResultado.fechaCita || '',
-                medicoId: citaActualParaResultado.medicoId || '',
-                medicoNombre: citaActualParaResultado.medicoNombre || 'No asignado',
-                motivoConsulta: citaActualParaResultado.motivoCita || '',
+                fechaConsulta: citaActualParaResultado.fechaCita || new Date().toISOString().split('T')[0],
                 diagnostico: diagnostico,
-                tratamiento: tratamiento,
-                signosVitales: {
-                    presionArterial: presionArterial || '',
-                    frecuenciaCardiaca: frecuenciaCardiaca || '',
-                    temperatura: temperatura || '',
-                    peso: peso || ''
-                },
+                motivoConsulta: citaActualParaResultado.motivoCita || '',
+                antecedentesPersonales: '',
+                antecedentesFamiliares: '',
+                peso: peso || '',
+                altura: '',
+                presionArterial: presionArterial || '',
+                frecuenciaCardiaca: frecuenciaCardiaca || '',
+                examenFisico: `
+**CITA MÉDICA**
+Tipo de Cita: ${citaActualParaResultado.tipoCita || 'N/A'}
+Fecha: ${new Date(citaActualParaResultado.fechaCita + 'T' + citaActualParaResultado.horaCita).toLocaleString('es-ES')}
+Médico: ${medico ? medico.nombre : 'No asignado'}
+
+**SIGNOS VITALES**
+${presionArterial ? `Presión Arterial: ${presionArterial}\n` : ''}
+${frecuenciaCardiaca ? `Frecuencia Cardíaca: ${frecuenciaCardiaca}\n` : ''}
+${temperatura ? `Temperatura: ${temperatura}\n` : ''}
+${peso ? `Peso: ${peso}\n` : ''}
+
+**MOTIVO DE CONSULTA**
+${citaActualParaResultado.motivoCita || 'N/A'}
+                `.trim(),
+                planTratamiento: `
+**DIAGNÓSTICO**
+${diagnostico}
+
+**TRATAMIENTO RECOMENDADO**
+${tratamiento}
+
+${proximaCita ? `**PRÓXIMA CITA**\n${new Date(proximaCita).toLocaleDateString('es-ES')}\n\n` : ''}
+                `.trim(),
                 observaciones: observacionesResultado || '',
-                proximaCita: proximaCita || '',
-                fechaCreacion: new Date().toISOString()
+                imagenes: [],
+                fechaCreacion: new Date().toISOString(),
+                tipo: 'cita',
+                citaId: citaActualParaResultado.id
             };
 
             await addDoc(collection(db, 'historiasClinicas'), historiaClinicaData);

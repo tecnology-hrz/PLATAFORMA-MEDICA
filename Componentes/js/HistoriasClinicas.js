@@ -706,7 +706,7 @@ window.viewHistoria = function(historiaId) {
             ${historia.examenFisico ? `
                 <div style="margin-top: 15px;">
                     <div class="detail-label">Observaciones del Examen</div>
-                    <div class="detail-value">${historia.examenFisico}</div>
+                    <div class="detail-value" style="white-space: pre-wrap;">${formatTextWithBold(historia.examenFisico)}</div>
                 </div>
             ` : ''}
         </div>
@@ -715,7 +715,7 @@ window.viewHistoria = function(historiaId) {
         ${historia.planTratamiento ? `
         <div class="historia-detail-section">
             <h3><i class="fas fa-notes-medical"></i> Plan de Tratamiento</h3>
-            <div class="detail-value">${historia.planTratamiento}</div>
+            <div class="detail-value" style="white-space: pre-wrap;">${formatTextWithBold(historia.planTratamiento)}</div>
         </div>
         ` : ''}
         
@@ -1103,9 +1103,7 @@ window.downloadHistoriaPDF = async function(historiaId) {
             }
             
             if (historia.examenFisico) {
-                const examenLines = doc.splitTextToSize(historia.examenFisico, 170);
-                doc.text(examenLines, margin, yPos);
-                yPos += examenLines.length * lineHeight + 8;
+                yPos = addFormattedTextToPDF(doc, historia.examenFisico, margin, yPos, 170, lineHeight, pageHeight);
             }
         }
         
@@ -1125,9 +1123,7 @@ window.downloadHistoriaPDF = async function(historiaId) {
             doc.setFont(undefined, 'normal');
             doc.setFontSize(10);
             doc.setTextColor(0, 0, 0);
-            const planLines = doc.splitTextToSize(historia.planTratamiento, 170);
-            doc.text(planLines, margin, yPos);
-            yPos += planLines.length * lineHeight + 8;
+            yPos = addFormattedTextToPDF(doc, historia.planTratamiento, margin, yPos, 170, lineHeight, pageHeight);
         }
         
         // Imágenes clínicas
@@ -1424,9 +1420,7 @@ document.getElementById('exportAllBtn').addEventListener('click', async () => {
                 }
                 
                 if (historia.examenFisico) {
-                    const examenLines = doc.splitTextToSize(historia.examenFisico, 170);
-                    doc.text(examenLines, margin, yPos);
-                    yPos += examenLines.length * lineHeight + 8;
+                    yPos = addFormattedTextToPDF(doc, historia.examenFisico, margin, yPos, 170, lineHeight, pageHeight);
                 }
             }
             
@@ -1443,9 +1437,7 @@ document.getElementById('exportAllBtn').addEventListener('click', async () => {
                 doc.setFont(undefined, 'normal');
                 doc.setFontSize(10);
                 doc.setTextColor(0, 0, 0);
-                const planLines = doc.splitTextToSize(historia.planTratamiento, 170);
-                doc.text(planLines, margin, yPos);
-                yPos += planLines.length * lineHeight + 8;
+                yPos = addFormattedTextToPDF(doc, historia.planTratamiento, margin, yPos, 170, lineHeight, pageHeight);
             }
             
             // Imagenes clinicas
@@ -1599,6 +1591,99 @@ function formatDate(dateString) {
         month: '2-digit',
         day: '2-digit'
     });
+}
+
+function formatTextWithBold(text) {
+    if (!text) return '';
+    // Convertir **texto** a <strong>texto</strong>
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+}
+
+// Función para agregar texto con formato de negritas al PDF
+function addFormattedTextToPDF(doc, text, xPos, yPos, maxWidth, lineHeight, pageHeight) {
+    if (!text) return yPos;
+    
+    const margin = 20;
+    
+    // Dividir el texto en líneas
+    const lines = text.split('\n');
+    
+    lines.forEach(line => {
+        // Verificar si necesitamos una nueva página
+        if (yPos > pageHeight - 30) {
+            doc.addPage();
+            yPos = margin;
+        }
+        
+        // Buscar patrones **texto** para negritas
+        const parts = [];
+        let currentPos = 0;
+        const boldPattern = /\*\*(.*?)\*\*/g;
+        let match;
+        
+        while ((match = boldPattern.exec(line)) !== null) {
+            // Agregar texto normal antes de la negrita
+            if (match.index > currentPos) {
+                parts.push({
+                    text: line.substring(currentPos, match.index),
+                    bold: false
+                });
+            }
+            // Agregar texto en negrita
+            parts.push({
+                text: match[1],
+                bold: true
+            });
+            currentPos = match.index + match[0].length;
+        }
+        
+        // Agregar el resto del texto normal
+        if (currentPos < line.length) {
+            parts.push({
+                text: line.substring(currentPos),
+                bold: false
+            });
+        }
+        
+        // Si no hay partes con formato, es una línea simple
+        if (parts.length === 0) {
+            parts.push({
+                text: line,
+                bold: false
+            });
+        }
+        
+        // Renderizar cada parte
+        let currentX = xPos;
+        parts.forEach(part => {
+            if (part.text) {
+                doc.setFont(undefined, part.bold ? 'bold' : 'normal');
+                
+                // Dividir en múltiples líneas si es necesario
+                const textLines = doc.splitTextToSize(part.text, maxWidth - (currentX - xPos));
+                
+                textLines.forEach((textLine, index) => {
+                    if (index > 0) {
+                        yPos += lineHeight;
+                        currentX = xPos;
+                        
+                        // Verificar nueva página
+                        if (yPos > pageHeight - 30) {
+                            doc.addPage();
+                            yPos = margin;
+                        }
+                    }
+                    
+                    doc.text(textLine, currentX, yPos);
+                    currentX += doc.getTextWidth(textLine);
+                });
+            }
+        });
+        
+        yPos += lineHeight;
+    });
+    
+    return yPos + 3; // Agregar un pequeño espacio extra
 }
 
 function getLocalDateString() {

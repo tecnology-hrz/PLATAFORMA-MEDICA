@@ -355,7 +355,11 @@ function renderCirugias() {
                         <button class="btn-action btn-view" onclick="viewCirugia('${cirugia.id}')" title="Ver detalles">
                             <i class="fas fa-eye"></i>
                         </button>
-                        ${cirugia.estado !== 'Realizada' ? `
+                        ${cirugia.estado === 'Realizada' && !cirugia.resultadoPostQuirurgico ? `
+                        <button class="btn-action btn-complete" onclick="registrarResultadoCirugia('${cirugia.id}')" title="Registrar resultado post-quirúrgico" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                            <i class="fas fa-notes-medical"></i>
+                        </button>
+                        ` : cirugia.estado !== 'Realizada' ? `
                         <button class="btn-action btn-complete" onclick="markAsCompleted('${cirugia.id}')" title="Marcar como realizada">
                             <i class="fas fa-check"></i>
                         </button>
@@ -953,6 +957,153 @@ window.markAsCompleted = function (cirugiaId) {
         }
     );
 };
+
+// Registrar resultado post-quirúrgico
+window.registrarResultadoCirugia = function (cirugiaId) {
+    const cirugia = allCirugias.find(c => c.id === cirugiaId);
+    if (!cirugia) return;
+
+    const paciente = allPacientes.find(p => p.id === cirugia.pacienteId);
+    const cirujano = allUsuarios.find(u => u.id === cirugia.cirujanoId);
+
+    // Mostrar información de la cirugía
+    const cirugiaInfo = `
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <p style="margin: 5px 0;"><strong>Paciente:</strong> ${paciente ? paciente.nombre : 'N/A'}</p>
+            <p style="margin: 5px 0;"><strong>Tipo de Cirugía:</strong> ${cirugia.tipoCirugia}</p>
+            <p style="margin: 5px 0;"><strong>Fecha:</strong> ${formatDateTime(cirugia.fechaHora)}</p>
+            <p style="margin: 5px 0;"><strong>Cirujano:</strong> ${cirujano ? cirujano.nombre : 'N/A'}</p>
+        </div>
+    `;
+
+    document.getElementById('cirugiaInfoResumen').innerHTML = cirugiaInfo;
+    document.getElementById('resultadoCirugiaModal').classList.add('active');
+
+    // Guardar el ID de la cirugía para usarlo al enviar el formulario
+    document.getElementById('resultadoCirugiaForm').dataset.cirugiaId = cirugiaId;
+};
+
+// Manejar el envío del formulario de resultado post-quirúrgico
+document.getElementById('resultadoCirugiaForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const cirugiaId = e.target.dataset.cirugiaId;
+    const cirugia = allCirugias.find(c => c.id === cirugiaId);
+    if (!cirugia) return;
+
+    const paciente = allPacientes.find(p => p.id === cirugia.pacienteId);
+    if (!paciente) {
+        showErrorModal('No se encontró el paciente asociado a esta cirugía');
+        return;
+    }
+
+    // Recopilar datos del formulario
+    const resultadoData = {
+        estadoCirugia: document.getElementById('estadoCirugia').value,
+        descripcionProcedimiento: document.getElementById('descripcionProcedimiento').value,
+        hallazgos: document.getElementById('hallazgos').value,
+        presionArterialPost: document.getElementById('presionArterialPost').value,
+        frecuenciaCardiacaPost: document.getElementById('frecuenciaCardiacaPost').value,
+        temperaturaPost: document.getElementById('temperaturaPost').value,
+        sangradoEstimado: document.getElementById('sangradoEstimado').value,
+        complicaciones: document.getElementById('complicaciones').value,
+        indicacionesPost: document.getElementById('indicacionesPost').value,
+        planSeguimiento: document.getElementById('planSeguimiento').value,
+        observacionesPostQuirurgicas: document.getElementById('observacionesPostQuirurgicas').value,
+        proximaCitaControl: document.getElementById('proximaCitaControl').value,
+        fechaRegistro: new Date().toISOString()
+    };
+
+    showLoadingModal('Guardando resultado y creando historia clínica...');
+
+    try {
+        // 1. Actualizar la cirugía con el resultado post-quirúrgico
+        await updateDoc(doc(db, 'cirugias', cirugiaId), {
+            resultadoPostQuirurgico: resultadoData
+        });
+
+        // 2. Crear historia clínica con la información de la cirugía y el resultado
+        const cirujano = allUsuarios.find(u => u.id === cirugia.cirujanoId);
+        
+        const historiaClinicaData = {
+            pacienteId: cirugia.pacienteId,
+            fechaConsulta: new Date(cirugia.fechaHora).toISOString().split('T')[0],
+            diagnostico: `Post-Quirúrgico: ${cirugia.tipoCirugia}`,
+            motivoConsulta: `Seguimiento post-operatorio de ${cirugia.tipoCirugia}`,
+            antecedentesPersonales: '',
+            antecedentesFamiliares: '',
+            peso: '',
+            altura: '',
+            presionArterial: resultadoData.presionArterialPost || '',
+            frecuenciaCardiaca: resultadoData.frecuenciaCardiacaPost || '',
+            examenFisico: `
+**CIRUGÍA REALIZADA**
+Tipo: ${cirugia.tipoCirugia}
+Fecha: ${formatDateTime(cirugia.fechaHora)}
+Cirujano: ${cirujano ? cirujano.nombre : 'N/A'}
+Estado: ${resultadoData.estadoCirugia}
+
+**PROCEDIMIENTO**
+${resultadoData.descripcionProcedimiento}
+
+${resultadoData.hallazgos ? `**HALLAZGOS**\n${resultadoData.hallazgos}\n\n` : ''}
+
+**SIGNOS VITALES POST-OPERATORIOS**
+${resultadoData.presionArterialPost ? `Presión Arterial: ${resultadoData.presionArterialPost}\n` : ''}
+${resultadoData.frecuenciaCardiacaPost ? `Frecuencia Cardíaca: ${resultadoData.frecuenciaCardiacaPost}\n` : ''}
+${resultadoData.temperaturaPost ? `Temperatura: ${resultadoData.temperaturaPost}\n` : ''}
+${resultadoData.sangradoEstimado ? `Sangrado Estimado: ${resultadoData.sangradoEstimado}\n` : ''}
+
+${resultadoData.complicaciones ? `**COMPLICACIONES**\n${resultadoData.complicaciones}\n\n` : ''}
+            `.trim(),
+            planTratamiento: `
+**INDICACIONES POST-OPERATORIAS**
+${resultadoData.indicacionesPost}
+
+${resultadoData.planSeguimiento ? `**PLAN DE SEGUIMIENTO**\n${resultadoData.planSeguimiento}\n\n` : ''}
+
+${resultadoData.proximaCitaControl ? `**PRÓXIMA CITA DE CONTROL**\n${new Date(resultadoData.proximaCitaControl).toLocaleDateString('es-ES')}\n\n` : ''}
+            `.trim(),
+            observaciones: resultadoData.observacionesPostQuirurgicas || '',
+            imagenes: [],
+            fechaCreacion: new Date().toISOString(),
+            tipo: 'post-quirurgico',
+            cirugiaId: cirugiaId
+        };
+
+        await addDoc(collection(db, 'historiasClinicas'), historiaClinicaData);
+
+        hideLoadingModal();
+        showSuccessModal('Resultado post-quirúrgico guardado e historia clínica creada exitosamente');
+        
+        document.getElementById('resultadoCirugiaModal').classList.remove('active');
+        document.getElementById('resultadoCirugiaForm').reset();
+        
+        await loadCirugias();
+        if (currentView === 'calendar') {
+            renderCalendar();
+        }
+    } catch (error) {
+        hideLoadingModal();
+        console.error('Error al guardar resultado:', error);
+        showErrorModal('Error al guardar el resultado post-quirúrgico');
+    }
+});
+
+// Cerrar modal de resultado
+document.getElementById('closeResultadoCirugiaModal').addEventListener('click', () => {
+    document.getElementById('resultadoCirugiaModal').classList.remove('active');
+});
+
+document.getElementById('cancelResultadoCirugiaBtn').addEventListener('click', () => {
+    document.getElementById('resultadoCirugiaModal').classList.remove('active');
+});
+
+document.getElementById('resultadoCirugiaModal').addEventListener('click', (e) => {
+    if (e.target.id === 'resultadoCirugiaModal') {
+        document.getElementById('resultadoCirugiaModal').classList.remove('active');
+    }
+});
 
 // Delete cirugia
 window.deleteCirugia = function (cirugiaId) {

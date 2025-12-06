@@ -539,6 +539,128 @@
         </div>
     </div>
 
+    <!-- Resultado Post-Quirúrgico Modal -->
+    <div class="cirugia-modal" id="resultadoCirugiaModal">
+        <div class="cirugia-modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Registrar Resultado Post-Quirúrgico</h2>
+                <button class="btn-close-modal" id="closeResultadoCirugiaModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="resultadoCirugiaForm">
+                <div class="modal-body">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Información de la Cirugía
+                        </h3>
+                        <div id="cirugiaInfoResumen"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-heartbeat"></i>
+                            Resultado de la Cirugía
+                        </h3>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Estado de la Cirugía *</label>
+                            <select id="estadoCirugia" class="form-select" required>
+                                <option value="">Seleccionar estado...</option>
+                                <option value="Exitosa">Exitosa</option>
+                                <option value="Exitosa con complicaciones menores">Exitosa con complicaciones menores</option>
+                                <option value="Complicaciones">Complicaciones</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Descripción del Procedimiento Realizado *</label>
+                            <textarea id="descripcionProcedimiento" class="form-textarea" rows="4"
+                                placeholder="Describa detalladamente el procedimiento realizado..." required></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Hallazgos Durante la Cirugía</label>
+                            <textarea id="hallazgos" class="form-textarea" rows="3"
+                                placeholder="Describa los hallazgos relevantes durante el procedimiento..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-notes-medical"></i>
+                            Seguimiento Post-Quirúrgico
+                        </h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Presión Arterial Post-Op</label>
+                                <input type="text" id="presionArterialPost" class="form-input" placeholder="120/80">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Frecuencia Cardíaca Post-Op</label>
+                                <input type="text" id="frecuenciaCardiacaPost" class="form-input" placeholder="70 bpm">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Temperatura Post-Op</label>
+                                <input type="text" id="temperaturaPost" class="form-input" placeholder="36.5°C">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Sangrado Estimado</label>
+                                <input type="text" id="sangradoEstimado" class="form-input" placeholder="100 ml">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Complicaciones Post-Operatorias</label>
+                            <textarea id="complicaciones" class="form-textarea" rows="3"
+                                placeholder="Describa cualquier complicación presentada..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Indicaciones Post-Operatorias *</label>
+                            <textarea id="indicacionesPost" class="form-textarea" rows="4"
+                                placeholder="Medicamentos, cuidados, restricciones, etc..." required></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Plan de Seguimiento</label>
+                            <textarea id="planSeguimiento" class="form-textarea" rows="3"
+                                placeholder="Próximas citas de control, estudios a realizar, etc..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Observaciones Adicionales</label>
+                            <textarea id="observacionesPostQuirurgicas" class="form-textarea" rows="3"
+                                placeholder="Notas adicionales sobre el post-operatorio..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Próxima Cita de Control</label>
+                            <input type="date" id="proximaCitaControl" class="form-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal btn-secondary" id="cancelResultadoCirugiaBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-modal btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar y Crear Historia Clínica
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Loading, Success, Error, Confirm Modals -->
     <div class="cirugia-modal" id="loadingModal">
         <div class="cirugia-modal-content" style="max-width: 350px;">
