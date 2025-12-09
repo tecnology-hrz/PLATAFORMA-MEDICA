@@ -554,6 +554,7 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
     const pacienteId = document.getElementById('pacienteId').value;
     const tipoCirugia = document.getElementById('tipoCirugia').value;
     const cirujanoId = document.getElementById('cirujanoId').value;
+    const lugarCirugia = document.getElementById('lugarCirugia').value;
     const fechaCirugia = document.getElementById('fechaCirugia').value;
     const hora = document.getElementById('horaSelect').value;
     const minuto = document.getElementById('minutoSelect').value;
@@ -561,7 +562,7 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
     const duracion = document.getElementById('duracion').value;
     const estado = document.getElementById('estado').value;
 
-    if (!pacienteId || !tipoCirugia || !cirujanoId || !fechaCirugia || !hora || !minuto || !periodo || !duracion) {
+    if (!pacienteId || !tipoCirugia || !cirujanoId || !lugarCirugia || !fechaCirugia || !hora || !minuto || !periodo || !duracion) {
         showErrorModal('Por favor, completa todos los campos obligatorios');
         return;
     }
@@ -584,6 +585,7 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
             pacienteId,
             tipoCirugia,
             cirujanoId,
+            lugarCirugia,
             fechaHora,
             duracion: parseFloat(duracion),
             estado,
@@ -629,6 +631,7 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
                 if (paciente && paciente.cedula) descripcionCompleta += `\nCédula: ${paciente.cedula}`;
                 if (paciente && paciente.telefono) descripcionCompleta += `\nTeléfono: ${paciente.telefono}`;
                 descripcionCompleta += `\n\nTipo de Cirugía: ${tipoCirugia}`;
+                descripcionCompleta += `\nLugar: ${lugarCirugia}`;
                 descripcionCompleta += `\nCirujano Principal: ${cirujano ? cirujano.nombre : 'No asignado'}`;
                 descripcionCompleta += `\nDuración Estimada: ${duracion} horas`;
                 
@@ -705,6 +708,7 @@ window.editCirugia = function (cirugiaId) {
     document.getElementById('pacienteId').value = cirugia.pacienteId;
     document.getElementById('tipoCirugia').value = cirugia.tipoCirugia;
     document.getElementById('cirujanoId').value = cirugia.cirujanoId;
+    document.getElementById('lugarCirugia').value = cirugia.lugarCirugia || '';
 
     // Separar fecha y hora
     if (cirugia.fechaHora) {
@@ -784,6 +788,10 @@ window.viewCirugia = function (cirugiaId) {
                 <div>
                     <div class="form-label">Tipo de Cirugía</div>
                     <div style="font-size: 15px; color: #2B3545; font-weight: 500;">${cirugia.tipoCirugia}</div>
+                </div>
+                <div>
+                    <div class="form-label">Lugar de la Cirugía</div>
+                    <div style="font-size: 15px; color: #2B3545; font-weight: 500;">${cirugia.lugarCirugia || 'No especificado'}</div>
                 </div>
                 <div>
                     <div class="form-label">Fecha y Hora</div>
@@ -921,6 +929,7 @@ window.markAsCompleted = function (cirugiaId) {
                     fechaConsulta: cirugia.fechaHora.split('T')[0],
                     diagnostico: `Cirugía: ${cirugia.tipoCirugia}`,
                     motivoConsulta: `Cirugía programada de ${cirugia.tipoCirugia}`,
+                    lugarCirugia: cirugia.lugarCirugia || '',
                     antecedentesPersonales: '',
                     antecedentesFamiliares: '',
                     peso: '',
@@ -928,7 +937,7 @@ window.markAsCompleted = function (cirugiaId) {
                     presionArterial: '',
                     frecuenciaCardiaca: '',
                     examenFisico: equipoQuirurgico,
-                    planTratamiento: `Cirugía realizada el ${formatDateTime(cirugia.fechaHora)}\nDuración: ${cirugia.duracion} horas\n\n${cirugia.descripcion || ''}`,
+                    planTratamiento: `Cirugía realizada el ${formatDateTime(cirugia.fechaHora)}\nLugar: ${cirugia.lugarCirugia || 'No especificado'}\nDuración: ${cirugia.duracion} horas\n\n${cirugia.descripcion || ''}`,
                     observaciones: `Historia clínica generada automáticamente desde cirugía realizada.\nID Cirugía: ${cirugiaId}`,
                     imagenes: [],
                     fechaCreacion: new Date().toISOString()
@@ -1030,6 +1039,7 @@ document.getElementById('resultadoCirugiaForm').addEventListener('submit', async
             fechaConsulta: new Date(cirugia.fechaHora).toISOString().split('T')[0],
             diagnostico: `Post-Quirúrgico: ${cirugia.tipoCirugia}`,
             motivoConsulta: `Seguimiento post-operatorio de ${cirugia.tipoCirugia}`,
+            lugarCirugia: cirugia.lugarCirugia || '',
             antecedentesPersonales: '',
             antecedentesFamiliares: '',
             peso: '',
@@ -1039,6 +1049,7 @@ document.getElementById('resultadoCirugiaForm').addEventListener('submit', async
             examenFisico: `
 **CIRUGÍA REALIZADA**
 Tipo: ${cirugia.tipoCirugia}
+Lugar: ${cirugia.lugarCirugia || 'No especificado'}
 Fecha: ${formatDateTime(cirugia.fechaHora)}
 Cirujano: ${cirujano ? cirujano.nombre : 'N/A'}
 Estado: ${resultadoData.estadoCirugia}

@@ -454,6 +454,7 @@ document.getElementById('historiaForm').addEventListener('submit', async (e) => 
             pacienteId,
             fechaConsulta,
             diagnostico,
+            lugarCirugia: document.getElementById('lugarCirugia').value,
             motivoConsulta: document.getElementById('motivoConsulta').value.trim(),
             antecedentesPersonales: document.getElementById('antecedentesPersonales').value.trim(),
             antecedentesFamiliares: document.getElementById('antecedentesFamiliares').value.trim(),
@@ -498,6 +499,7 @@ window.editHistoria = async function(historiaId) {
     document.getElementById('pacienteId').value = historia.pacienteId;
     document.getElementById('fechaConsulta').value = historia.fechaConsulta;
     document.getElementById('diagnostico').value = historia.diagnostico;
+    document.getElementById('lugarCirugia').value = historia.lugarCirugia || '';
     document.getElementById('motivoConsulta').value = historia.motivoConsulta || '';
     document.getElementById('antecedentesPersonales').value = historia.antecedentesPersonales || '';
     document.getElementById('antecedentesFamiliares').value = historia.antecedentesFamiliares || '';
@@ -854,7 +856,12 @@ window.downloadHistoriaPDF = async function(historiaId) {
         yPos += lineHeight;
         doc.text(`Fecha de Consulta: ${formatDate(historia.fechaConsulta || historia.fechaCita)}`, margin + 5, yPos);
         doc.text(`Diagnóstico: ${historia.diagnostico}`, pageWidth / 2 + 5, yPos);
-        yPos += 15;
+        yPos += lineHeight;
+        if (historia.lugarCirugia) {
+            doc.text(`Lugar de Cirugía: ${historia.lugarCirugia}`, margin + 5, yPos);
+            yPos += lineHeight;
+        }
+        yPos += 8;
         
         // Información adicional de la cita
         if (historia.medicoNombre || historia.tipoCita) {
