@@ -56,42 +56,42 @@ window.addEventListener('DOMContentLoaded', () => {
 // Setup Google Calendar connection button
 function setupGoogleCalendarButton() {
     const connectBtn = document.getElementById('connectGoogleCalendar');
-    
+
     if (!connectBtn) return;
-    
+
     connectBtn.addEventListener('click', async () => {
         try {
             if (!window.GoogleCalendar || !window.GoogleCalendar.isReady()) {
                 showErrorModal('Google Calendar API aún no está cargado. Por favor, espera unos segundos e inténtalo de nuevo.');
                 return;
             }
-            
+
             showLoadingModal('Conectando con Google Calendar...');
-            
+
             await window.GoogleCalendar.authorize();
-            
+
             hideLoadingModal();
             showSuccessModal('¡Google Calendar conectado exitosamente! Ahora puedes agendar citas en el calendario.');
-            
+
         } catch (error) {
             hideLoadingModal();
             console.error('Error al conectar Google Calendar:', error);
             showErrorModal('Error al conectar con Google Calendar. Por favor, inténtalo de nuevo.');
         }
     });
-    
+
     // Intentar restaurar token al cargar la página - múltiples intentos
     let intentos = 0;
     const maxIntentos = 5;
-    
+
     const intentarRestaurar = setInterval(() => {
         intentos++;
         console.log(`🔄 Intento ${intentos} de restaurar token...`);
-        
+
         if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
             console.log('✅ Google Calendar API está lista, restaurando token...');
             const restaurado = window.GoogleCalendar.restoreToken();
-            
+
             if (restaurado || intentos >= maxIntentos) {
                 clearInterval(intentarRestaurar);
                 console.log(restaurado ? '✅ Token restaurado' : '⚠️ No hay token guardado');
@@ -99,13 +99,13 @@ function setupGoogleCalendarButton() {
         } else {
             console.log('⏳ Esperando que Google Calendar API esté lista...');
         }
-        
+
         if (intentos >= maxIntentos) {
             clearInterval(intentarRestaurar);
             console.log('⏹️ Alcanzado máximo de intentos');
         }
     }, 800);
-    
+
     // Check status periodically
     setInterval(() => {
         if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
@@ -186,13 +186,18 @@ async function loadCitas() {
             });
         });
 
+        const today = new Date().toISOString().split('T')[0];
+
         allCitas.sort((a, b) => {
-            const dateA = new Date(`${a.fechaCita} ${a.horaCita}`);
-            const dateB = new Date(`${b.fechaCita} ${b.horaCita}`);
-            return dateB - dateA;
+            const dateA = new Date(`${a.fechaCita}T${a.horaCita}`);
+            const dateB = new Date(`${b.fechaCita}T${b.horaCita}`);
+            return dateA - dateB;
         });
 
-        filteredCitas = [...allCitas];
+        // Filter out cancelled and past appointments by default
+        filteredCitas = allCitas.filter(cita => {
+            return cita.estado !== 'cancelada' && cita.fechaCita >= today;
+        });
         updateStats();
         renderCitas();
     } catch (error) {
@@ -402,7 +407,15 @@ function applyFilters() {
         const matchEstado = !estado || cita.estado === estado;
         const matchFecha = !fecha || cita.fechaCita === fecha;
 
-        return matchSearch && matchEstado && matchFecha;
+        // Default constraints: hide cancelled and past appointments unless specifically filtered?
+        // User requested: "no de dias atrasado... que salga algoq ue ya paso os e cancelo hace rato"
+        // Enforcing filter to hide cancelled and past appointments ALWAYS based on user request.
+
+        const today = new Date().toISOString().split('T')[0];
+        const isUpcoming = cita.fechaCita >= today;
+        const isNotCancelled = cita.estado !== 'cancelada';
+
+        return matchSearch && matchEstado && matchFecha && isUpcoming && isNotCancelled;
     });
 
     renderCitas();
@@ -489,14 +502,14 @@ function generateGoogleCalendarLink(citaData, pacienteData) {
     // Crear fecha y hora en formato ISO
     const [year, month, day] = citaData.fechaCita.split('-');
     const [hours, minutes] = citaData.horaCita.split(':');
-    
+
     // Fecha de inicio
     const startDate = new Date(year, month - 1, day, hours, minutes);
-    
+
     // Fecha de fin (agregar duración)
     const endDate = new Date(startDate);
     endDate.setMinutes(endDate.getMinutes() + parseInt(citaData.duracion));
-    
+
     // Formatear fechas para Google Calendar (formato: YYYYMMDDTHHmmss)
     const formatGoogleDate = (date) => {
         const y = date.getFullYear();
@@ -506,10 +519,10 @@ function generateGoogleCalendarLink(citaData, pacienteData) {
         const min = String(date.getMinutes()).padStart(2, '0');
         return `${y}${m}${d}T${h}${min}00`;
     };
-    
+
     const startFormatted = formatGoogleDate(startDate);
     const endFormatted = formatGoogleDate(endDate);
-    
+
     // Crear título y descripción
     const title = encodeURIComponent(`Cita: ${pacienteData.nombre} - ${getTipoCitaText(citaData.tipoCita)}`);
     const description = encodeURIComponent(
@@ -519,12 +532,12 @@ function generateGoogleCalendarLink(citaData, pacienteData) {
         `Motivo: ${citaData.motivoCita}\n` +
         `Duración: ${citaData.duracion} minutos`
     );
-    
+
     // Generar URL de Google Calendar
     // Nota: Google Calendar abrirá con la cuenta predeterminada del navegador
     // No es posible forzar una cuenta específica sin usar la API de Google
     const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startFormatted}/${endFormatted}&details=${description}&sf=true&output=xml`;
-    
+
     return googleCalendarUrl;
 }
 
@@ -735,7 +748,7 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
                 };
 
                 const calendarEvent = await window.GoogleCalendar.createCalendarEvent(eventDetails);
-                
+
                 // Save calendar event ID to Firebase
                 await updateDoc(doc(db, 'citas', citaId), {
                     googleCalendarEventId: calendarEvent.id
@@ -756,14 +769,14 @@ document.getElementById('citaForm').addEventListener('submit', async (e) => {
 
         // Mostrar resultado según los emails enviados y calendario
         let mensaje = '✅ Cita agendada exitosamente';
-        
+
         // Información del calendario
         if (calendarSuccess) {
             mensaje += ' y agregada a Google Calendar';
         } else if (window.GoogleCalendar && window.GoogleCalendar.isReady() && !window.GoogleCalendar.isAuthorized()) {
             mensaje += '. ⚠️ Para agregar al calendario, primero debes conectar Google Calendar';
         }
-        
+
         // Información de los correos
         if (emailResults.paciente.success && emailResults.medico.success) {
             mensaje += '. 📧 Correos enviados al paciente y al médico';
@@ -1027,9 +1040,9 @@ function showSuccessModalWithCalendar(message, googleCalendarLink) {
     const messageElement = document.getElementById('successMessage');
     const calendarContainer = document.getElementById('calendarButtonContainer');
     const calendarBtn = document.getElementById('addToCalendarBtn');
-    
+
     messageElement.textContent = message;
-    
+
     // Mostrar el botón de calendario con el enlace
     if (googleCalendarLink) {
         calendarBtn.href = googleCalendarLink;
@@ -1037,7 +1050,7 @@ function showSuccessModalWithCalendar(message, googleCalendarLink) {
     } else {
         calendarContainer.style.display = 'none';
     }
-    
+
     modal.classList.add('active');
 }
 
@@ -1357,9 +1370,9 @@ function createCalendarDay(day, year, month, isOtherMonth, isToday = false) {
 
 
 // TEST FUNCTION - Enviar email de prueba al médico
-window.testEmailMedico = async function() {
+window.testEmailMedico = async function () {
     console.log('🧪 Iniciando prueba de email al médico...');
-    
+
     // Datos de prueba
     const citaDataTest = {
         fechaCita: '2025-12-10',
@@ -1369,28 +1382,28 @@ window.testEmailMedico = async function() {
         duracion: '30',
         medicoNombre: 'Dr. Prueba'
     };
-    
+
     const pacienteDataTest = {
         nombre: 'Paciente de Prueba',
         email: 'paciente@test.com',
         cedula: '1234567890'
     };
-    
+
     const medicoDataTest = {
         nombre: 'Dr. Andrés Hernández',
         email: 'hrzandres009@gmail.com'
     };
-    
+
     console.log('📋 Datos de prueba:', {
         cita: citaDataTest,
         paciente: pacienteDataTest,
         medico: medicoDataTest
     });
-    
+
     try {
         const results = await sendAppointmentEmail(citaDataTest, pacienteDataTest, medicoDataTest);
         console.log('📊 Resultados:', results);
-        
+
         if (results.medico.success) {
             alert('✅ Email de prueba enviado al médico exitosamente! Revisa la consola para más detalles.');
         } else {

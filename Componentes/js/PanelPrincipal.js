@@ -22,16 +22,16 @@ let allCitas = [];
 // Check if user is logged in
 window.addEventListener('DOMContentLoaded', () => {
     const sessionData = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
-    
+
     if (!sessionData) {
         window.location.href = '../Login.html';
         return;
     }
-    
+
     // Load user data
     const userData = JSON.parse(sessionData);
     loadPageUserData(userData);
-    
+
     // Wait for Sidebar.js to load
     setTimeout(() => {
         loadDashboardData();
@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // Load user data into page-specific UI
 function loadPageUserData(userData) {
     const pageUserName = document.getElementById('pageUserName');
-    
+
     if (pageUserName) {
         pageUserName.textContent = userData.nombre.split(' ')[0];
     }
@@ -73,13 +73,13 @@ async function loadDashboardData() {
 
         // Update stats
         updateStats();
-        
+
         // Update recent appointments
         updateRecentCitas();
-        
+
         // Update surgeries by type
         updateCirugiasByType();
-        
+
     } catch (error) {
         console.error('Error loading dashboard data:', error);
     }
@@ -107,20 +107,26 @@ function updateStats() {
 // Update recent appointments
 function updateRecentCitas() {
     const citasRecientesContainer = document.querySelector('.content-card:first-child .card-body');
-    
+
     // Get recent citas (last 5)
+    const today = new Date().toISOString().split('T')[0];
+
+    // Get recent upcoming citas
     const recentCitas = [...allCitas]
+        .filter(cita => {
+            return cita.estado !== 'cancelada' && cita.fechaCita >= today;
+        })
         .sort((a, b) => {
-            const dateA = new Date(`${a.fechaCita} ${a.horaCita}`);
-            const dateB = new Date(`${b.fechaCita} ${b.horaCita}`);
-            return dateB - dateA;
+            const dateA = new Date(`${a.fechaCita}T${a.horaCita}`);
+            const dateB = new Date(`${b.fechaCita}T${b.horaCita}`);
+            return dateA - dateB;
         })
         .slice(0, 5);
 
     if (recentCitas.length === 0) {
         citasRecientesContainer.innerHTML = `
             <p style="color: #6c757d; text-align: center; padding: 20px;">
-                No hay citas recientes
+                No hay citas próximas programadas
             </p>
         `;
         return;
@@ -161,7 +167,7 @@ function updateRecentCitas() {
 // Update surgeries by type
 function updateCirugiasByType() {
     const cirugiasByTypeContainer = document.querySelector('.content-card:last-child .card-body');
-    
+
     // Count surgeries by type
     const cirugiasByType = {};
     allCirugias.forEach(cirugia => {
