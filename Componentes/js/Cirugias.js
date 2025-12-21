@@ -47,61 +47,61 @@ window.addEventListener('DOMContentLoaded', () => {
 // Setup Google Calendar connection button
 function setupGoogleCalendarButton() {
     const connectBtn = document.getElementById('connectGoogleCalendar');
-    
+
     if (!connectBtn) return;
-    
+
     connectBtn.addEventListener('click', async () => {
         try {
             // Si la API no está lista, esperamos hasta que lo esté
             if (!window.GoogleCalendar || !window.GoogleCalendar.isReady()) {
                 showLoadingModal('Esperando que Google Calendar API se cargue...');
-                
+
                 // Esperamos hasta 10 segundos para que la API se cargue
                 let intentosEspera = 0;
                 const maxIntentosEspera = 20; // 20 * 500ms = 10 segundos
-                
+
                 while ((!window.GoogleCalendar || !window.GoogleCalendar.isReady()) && intentosEspera < maxIntentosEspera) {
                     await new Promise(resolve => setTimeout(resolve, 500));
                     intentosEspera++;
                     console.log(`⏳ Esperando carga de API (intento ${intentosEspera}/${maxIntentosEspera})...`);
                 }
-                
+
                 if (!window.GoogleCalendar || !window.GoogleCalendar.isReady()) {
                     hideLoadingModal();
                     showErrorModal('Google Calendar API no se pudo cargar. Por favor, recarga la página e inténtalo de nuevo.');
                     return;
                 }
             }
-            
+
             showLoadingModal('Conectando con Google Calendar...');
-            
+
             await window.GoogleCalendar.authorize();
-            
+
             hideLoadingModal();
             showSuccessModal('¡Google Calendar conectado exitosamente! Ahora las cirugías se agregarán automáticamente al calendario.');
-            
+
         } catch (error) {
             hideLoadingModal();
             console.error('Error al conectar Google Calendar:', error);
             showErrorModal('Error al conectar con Google Calendar. Por favor, inténtalo de nuevo.');
         }
     });
-    
+
     // Mostrar estado de carga inicial
     updateCalendarLoadingStatus();
-    
+
     // Intentar restaurar token al cargar la página - múltiples intentos
     let intentos = 0;
     const maxIntentos = 10; // Aumentado a 10 intentos
-    
+
     const intentarRestaurar = setInterval(() => {
         intentos++;
         console.log(`🔄 Intento ${intentos} de restaurar token...`);
-        
+
         if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
             console.log('✅ Google Calendar API está lista, restaurando token...');
             const restaurado = window.GoogleCalendar.restoreToken();
-            
+
             clearInterval(intentarRestaurar);
             console.log(restaurado ? '✅ Token restaurado' : '⚠️ No hay token guardado');
             updateCalendarLoadingStatus(true);
@@ -109,14 +109,14 @@ function setupGoogleCalendarButton() {
             console.log('⏳ Esperando que Google Calendar API esté lista...');
             updateCalendarLoadingStatus();
         }
-        
+
         if (intentos >= maxIntentos) {
             clearInterval(intentarRestaurar);
             console.log('⏹️ Alcanzado máximo de intentos para restaurar token');
             updateCalendarLoadingStatus(true);
         }
     }, 1000); // Aumentado a 1 segundo entre intentos
-    
+
     // Check status periodically
     setInterval(() => {
         if (window.GoogleCalendar && window.GoogleCalendar.isReady()) {
@@ -129,7 +129,7 @@ function setupGoogleCalendarButton() {
 function updateCalendarLoadingStatus(loaded = false) {
     const statusElement = document.getElementById('googleCalendarStatus');
     if (!statusElement) return;
-    
+
     if (!loaded && (!window.GoogleCalendar || !window.GoogleCalendar.isReady())) {
         statusElement.innerHTML = `
             <i class="fas fa-spinner fa-spin" style="color: #3498db;"></i>
@@ -545,6 +545,9 @@ document.getElementById('addCirugiaBtn').addEventListener('click', () => {
     document.getElementById('cirugiaForm').reset();
     document.getElementById('estado').value = 'Programada';
     document.getElementById('cirugiaModal').classList.add('active');
+
+    // Resetear checklist y progreso
+    updateChecklistProgress();
 });
 
 // Save cirugia
@@ -564,6 +567,37 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
 
     if (!pacienteId || !tipoCirugia || !cirujanoId || !lugarCirugia || !fechaCirugia || !hora || !minuto || !periodo || !duracion) {
         showErrorModal('Por favor, completa todos los campos obligatorios');
+        return;
+    }
+
+    // Validar que todos los items del checklist estén marcados como SÍ
+    const checklistItemNames = [
+        'checkValoracion',
+        'checkHistoriaClinica',
+        'checkExamenes',
+        'checkRevisionExamenes',
+        'checkPlanTrabajo',
+        'checkPagoCirugia',
+        'checkProgramacionCirugia',
+        'checkFormulaMedica',
+        'checkKitCancelado',
+        'checkKitEntregado',
+        'checkAsesoriaPreQuirurgica',
+        'checkRecomendaciones',
+        'checkDatosClinica',
+        'checkProtesis',
+        'checkPoliza',
+        'checkPrimerMasaje',
+        'checkCitaControlPrimera'
+    ];
+
+    const allMarkedYes = checklistItemNames.every(itemName => {
+        const radioSi = document.querySelector(`input[name="${itemName}"][value="si"]`);
+        return radioSi && radioSi.checked;
+    });
+
+    if (!allMarkedYes) {
+        showErrorModal('⚠️ AUTORIZACIÓN REQUERIDA\n\nTodos los items del Check List de Cirugía deben estar marcados como SÍ para autorizar la cirugía.\n\nPor favor, verifica que todos los requisitos hayan sido completados.');
         return;
     }
 
@@ -601,6 +635,48 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
             resultadoEsperado: document.getElementById('resultadoEsperado').value,
             asistencia: document.getElementById('asistencia').value,
             observacionesSeguimiento: document.getElementById('observacionesSeguimiento').value.trim(),
+            // Check List de Autorización con Realizado Por
+            checklistAutorizacion: {
+                valoracion: document.querySelector('input[name="checkValoracion"][value="si"]')?.checked || false,
+                valoracionRealizadoPor: document.getElementById('realizadoPorValoracion')?.value.trim() || '',
+                historiaClinica: document.querySelector('input[name="checkHistoriaClinica"][value="si"]')?.checked || false,
+                historiaClinicaRealizadoPor: document.getElementById('realizadoPorHistoriaClinica')?.value.trim() || '',
+                examenes: document.querySelector('input[name="checkExamenes"][value="si"]')?.checked || false,
+                examenesRealizadoPor: document.getElementById('realizadoPorExamenes')?.value.trim() || '',
+                revisionExamenes: document.querySelector('input[name="checkRevisionExamenes"][value="si"]')?.checked || false,
+                revisionExamenesRealizadoPor: document.getElementById('realizadoPorRevisionExamenes')?.value.trim() || '',
+                planTrabajo: document.querySelector('input[name="checkPlanTrabajo"][value="si"]')?.checked || false,
+                planTrabajoRealizadoPor: document.getElementById('realizadoPorPlanTrabajo')?.value.trim() || '',
+                pagoCirugia: document.querySelector('input[name="checkPagoCirugia"][value="si"]')?.checked || false,
+                pagoCirugiaRealizadoPor: document.getElementById('realizadoPorPagoCirugia')?.value.trim() || '',
+                programacionCirugia: document.querySelector('input[name="checkProgramacionCirugia"][value="si"]')?.checked || false,
+                programacionCirugiaRealizadoPor: document.getElementById('realizadoPorProgramacionCirugia')?.value.trim() || '',
+                formulaMedica: document.querySelector('input[name="checkFormulaMedica"][value="si"]')?.checked || false,
+                formulaMedicaRealizadoPor: document.getElementById('realizadoPorFormulaMedica')?.value.trim() || '',
+                kitCancelado: document.querySelector('input[name="checkKitCancelado"][value="si"]')?.checked || false,
+                kitCanceladoRealizadoPor: document.getElementById('realizadoPorKitCancelado')?.value.trim() || '',
+                kitEntregado: document.querySelector('input[name="checkKitEntregado"][value="si"]')?.checked || false,
+                kitEntregadoRealizadoPor: document.getElementById('realizadoPorKitEntregado')?.value.trim() || '',
+                asesoriaPreQuirurgica: document.querySelector('input[name="checkAsesoriaPreQuirurgica"][value="si"]')?.checked || false,
+                asesoriaPreQuirurgicaRealizadoPor: document.getElementById('realizadoPorAsesoriaPreQuirurgica')?.value.trim() || '',
+                recomendaciones: document.querySelector('input[name="checkRecomendaciones"][value="si"]')?.checked || false,
+                recomendacionesRealizadoPor: document.getElementById('realizadoPorRecomendaciones')?.value.trim() || '',
+                datosClinica: document.querySelector('input[name="checkDatosClinica"][value="si"]')?.checked || false,
+                datosClinicaRealizadoPor: document.getElementById('realizadoPorDatosClinica')?.value.trim() || '',
+                protesis: document.querySelector('input[name="checkProtesis"][value="si"]')?.checked || false,
+                protesisRealizadoPor: document.getElementById('realizadoPorProtesis')?.value.trim() || '',
+                poliza: document.querySelector('input[name="checkPoliza"][value="si"]')?.checked || false,
+                polizaRealizadoPor: document.getElementById('realizadoPorPoliza')?.value.trim() || '',
+                primerMasaje: document.querySelector('input[name="checkPrimerMasaje"][value="si"]')?.checked || false,
+                primerMasajeRealizadoPor: document.getElementById('realizadoPorPrimerMasaje')?.value.trim() || '',
+                citaControlPrimera: document.querySelector('input[name="checkCitaControlPrimera"][value="si"]')?.checked || false,
+                citaControlPrimeraRealizadoPor: document.getElementById('realizadoPorCitaControlPrimera')?.value.trim() || '',
+                fechaAutorizacion: new Date().toISOString(),
+                // Campos de firmas
+                firmaResponsable: document.getElementById('firmaResponsable')?.value.trim() || '',
+                revisadoPor: document.getElementById('revisadoPor')?.value.trim() || '',
+                aprobadoPor: document.getElementById('aprobadoPor')?.value.trim() || ''
+            },
             fechaCreacion: editingCirugiaId ? allCirugias.find(c => c.id === editingCirugiaId).fechaCreacion : new Date().toISOString()
         };
 
@@ -634,7 +710,7 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
                 descripcionCompleta += `\nLugar: ${lugarCirugia}`;
                 descripcionCompleta += `\nCirujano Principal: ${cirujano ? cirujano.nombre : 'No asignado'}`;
                 descripcionCompleta += `\nDuración Estimada: ${duracion} horas`;
-                
+
                 if (cirugiaData.anestesiologo) descripcionCompleta += `\n\nEquipo Quirúrgico:\nAnestesiólogo: ${cirugiaData.anestesiologo}`;
                 if (cirugiaData.instrumentista) descripcionCompleta += `\nInstrumentista: ${cirugiaData.instrumentista}`;
                 if (cirugiaData.enfermera) descripcionCompleta += `\nEnfermera Circulante: ${cirugiaData.enfermera}`;
@@ -655,7 +731,7 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
                 };
 
                 const calendarEvent = await window.GoogleCalendar.createCalendarEvent(eventDetails);
-                
+
                 // Guardar el ID del evento de Google Calendar en Firebase
                 await updateDoc(doc(db, 'cirugias', cirugiaId), {
                     googleCalendarEventId: calendarEvent.id
@@ -676,7 +752,7 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
 
         // Mostrar resultado según el calendario
         let mensaje = editingCirugiaId ? '✅ Cirugía actualizada exitosamente' : '✅ Cirugía programada exitosamente';
-        
+
         if (calendarSuccess) {
             mensaje += ' y agregada a Google Calendar';
         } else if (window.GoogleCalendar && window.GoogleCalendar.isReady() && !window.GoogleCalendar.isAuthorized()) {
@@ -890,6 +966,77 @@ window.viewCirugia = function (cirugiaId) {
             ` : ''}
         </div>
         ` : ''}
+        
+        ${cirugia.checklistAutorizacion ? `
+        <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-clipboard-check"></i> Check List Cirugía - Autorización</h3>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 0; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                ${Object.entries({
+        'VALORACIÓN': 'valoracion',
+        'HISTORIA CLÍNICA': 'historiaClinica',
+        'EXÁMENES': 'examenes',
+        'REVISIÓN DE EXÁMENES': 'revisionExamenes',
+        'PLAN DE TRABAJO': 'planTrabajo',
+        'PAGO CIRUGÍA': 'pagoCirugia',
+        'PROGRAMACIÓN CIRUGÍA': 'programacionCirugia',
+        'FÓRMULA MÉDICA': 'formulaMedica',
+        'KIT CANCELADO': 'kitCancelado',
+        'KIT ENTREGADO': 'kitEntregado',
+        'ASESORÍA PRE QUIRÚRGICA': 'asesoriaPreQuirurgica',
+        'RECOMENDACIONES': 'recomendaciones',
+        'DATOS DE CLÍNICA': 'datosClinica',
+        'PRÓTESIS': 'protesis',
+        'PÓLIZA': 'poliza',
+        'PRIMER MASAJE POSQUIRÚRGICO': 'primerMasaje',
+        'CITA DE CONTROL PRIMERA VEZ': 'citaControlPrimera'
+    }).map(([label, key]) => {
+        const isChecked = cirugia.checklistAutorizacion[key];
+        const realizadoPor = cirugia.checklistAutorizacion[key + 'RealizadoPor'];
+        const bgColor = isChecked ? '#f0f8f5' : '#fff5f5';
+        const iconColor = isChecked ? '#28a745' : '#dc3545';
+        const icon = isChecked ? 'fa-check' : 'fa-times';
+
+        return `
+                    <div style="display: grid; grid-template-columns: 1fr 100px 180px; gap: 10px; padding: 10px 15px; background: ${bgColor}; border-bottom: 1px solid #e0e0e0; align-items: center;">
+                        <div style="font-weight: 600; font-size: 13px; color: ${iconColor}; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas ${icon}"></i> ${label}
+                        </div>
+                        <div style="font-size: 12px; font-weight: 700; color: ${iconColor}; text-align: center;">
+                            ${isChecked ? 'SÍ' : 'NO'}
+                        </div>
+                        <div style="font-size: 12px; color: #6c757d; font-style: italic; border-left: 1px solid #dee2e6; padding-left: 10px;">
+                            ${realizadoPor ? `<i class="fas fa-user-edit" style="margin-right: 5px;"></i>${realizadoPor}` : '<span style="opacity: 0.5;">No especificado</span>'}
+                        </div>
+                    </div>`;
+    }).join('')}
+            </div>
+            
+            <div style="margin-top: 25px; padding: 20px; background: #f8f9fa; border-radius: 12px; border: 2px solid #e0e0e0;">
+                <h4 style="font-size: 14px; font-weight: 600; color: #2B3545; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0;">
+                    <i class="fas fa-signature" style="color: #D11A5C; margin-right: 8px;"></i>Autorización y Firmas
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div>
+                        <div style="font-size: 11px; font-weight: 700; color: #D11A5C; text-transform: uppercase;">Firma Responsable</div>
+                        <div style="font-size: 14px; margin-top: 5px; font-weight: 500;">${cirugia.checklistAutorizacion.firmaResponsable || '<span style="color: #adb5bd; font-style: italic;">Sin firma</span>'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; font-weight: 700; color: #D11A5C; text-transform: uppercase;">Revisado Por</div>
+                        <div style="font-size: 14px; margin-top: 5px; font-weight: 500;">${cirugia.checklistAutorizacion.revisadoPor || '<span style="color: #adb5bd; font-style: italic;">Sin firmar</span>'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; font-weight: 700; color: #D11A5C; text-transform: uppercase;">Aprobado Por</div>
+                        <div style="font-size: 14px; margin-top: 5px; font-weight: 500;">${cirugia.checklistAutorizacion.aprobadoPor || '<span style="color: #adb5bd; font-style: italic;">Sin firmar</span>'}</div>
+                    </div>
+                </div>
+                ${cirugia.checklistAutorizacion.fechaAutorizacion ? `
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #e0e0e0; text-align: center; font-size: 12px; color: #6c757d;">
+                    Autorizado digitalmente el ${new Date(cirugia.checklistAutorizacion.fechaAutorizacion).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                </div>
+                ` : ''}
+            </div>
+        </div>
+        ` : ''}
     `;
 
     document.getElementById('viewCirugiaModal').classList.add('active');
@@ -1033,7 +1180,7 @@ document.getElementById('resultadoCirugiaForm').addEventListener('submit', async
 
         // 2. Crear historia clínica con la información de la cirugía y el resultado
         const cirujano = allUsuarios.find(u => u.id === cirugia.cirujanoId);
-        
+
         const historiaClinicaData = {
             pacienteId: cirugia.pacienteId,
             fechaConsulta: new Date(cirugia.fechaHora).toISOString().split('T')[0],
@@ -1086,10 +1233,10 @@ ${resultadoData.proximaCitaControl ? `**PRÓXIMA CITA DE CONTROL**\n${new Date(r
 
         hideLoadingModal();
         showSuccessModal('Resultado post-quirúrgico guardado e historia clínica creada exitosamente');
-        
+
         document.getElementById('resultadoCirugiaModal').classList.remove('active');
         document.getElementById('resultadoCirugiaForm').reset();
-        
+
         await loadCirugias();
         if (currentView === 'calendar') {
             renderCalendar();
@@ -1257,7 +1404,7 @@ function showConfirmModal(title, message, onConfirm, options = {}) {
     const btnText = options.confirmText || 'Eliminar';
     const btnIcon = options.confirmIcon || 'fas fa-trash';
     const btnColor = options.confirmColor || '#dc3545';
-    
+
     confirmBtnIcon.className = btnIcon;
     confirmBtnText.textContent = btnText;
     confirmBtn.style.background = btnColor;
@@ -1270,7 +1417,6 @@ function showConfirmModal(title, message, onConfirm, options = {}) {
 
     modal.classList.add('active');
 }
-
 
 // Time Picker functionality
 let selectedHour = 12;
@@ -1425,3 +1571,52 @@ function updateClockNumbers() {
 updateTimeDisplay();
 updateClockNumbers();
 updateClockHand();
+
+// ===== CHECKLIST PROGRESS FUNCTIONS =====
+// Función para actualizar el progreso del checklist
+function updateChecklistProgress() {
+    const checklistItemNames = [
+        'checkValoracion',
+        'checkHistoriaClinica',
+        'checkExamenes',
+        'checkRevisionExamenes',
+        'checkPlanTrabajo',
+        'checkPagoCirugia',
+        'checkProgramacionCirugia',
+        'checkFormulaMedica',
+        'checkKitCancelado',
+        'checkKitEntregado',
+        'checkAsesoriaPreQuirurgica',
+        'checkRecomendaciones',
+        'checkDatosClinica',
+        'checkProtesis',
+        'checkPoliza',
+        'checkPrimerMasaje',
+        'checkCitaControlPrimera'
+    ];
+
+    let completedCount = 0;
+
+    checklistItemNames.forEach(itemName => {
+        const radioSi = document.querySelector(`input[name="${itemName}"][value="si"]`);
+        if (radioSi && radioSi.checked) {
+            completedCount++;
+        }
+    });
+
+    const progressBar = document.getElementById('checklistProgress');
+    const checklistCount = document.getElementById('checklistCount');
+
+    if (progressBar && checklistCount) {
+        const percentage = (completedCount / checklistItemNames.length) * 100;
+        progressBar.style.width = `${percentage}%`;
+        checklistCount.textContent = completedCount;
+    }
+}
+
+// Agregar event listeners para actualizar el progreso cuando se seleccionen los radio buttons
+document.addEventListener('change', function (e) {
+    if (e.target.classList.contains('checklist-radio')) {
+        updateChecklistProgress();
+    }
+});

@@ -440,6 +440,263 @@
                             placeholder="Detalles de la cirugía, preparación especial, notas importantes..."></textarea>
                     </div>
 
+                    <!-- CHECK LIST CIRUGÍA - AUTORIZACIÓN -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-clipboard-check"></i>
+                            Check List Cirugía - Autorización *
+                        </h3>
+                        <p class="checklist-subtitle">Todos los items deben estar marcados para autorizar la cirugía. El
+                            campo "Realizado Por" es opcional.</p>
+
+                        <!-- Encabezado del checklist -->
+                        <div class="checklist-header-row">
+                            <span class="checklist-col-item">ITEM</span>
+                            <span class="checklist-col-check">SÍ</span>
+                            <span class="checklist-col-check">NO</span>
+                            <span class="checklist-col-realizado">REALIZADO POR</span>
+                        </div>
+
+                        <div class="checklist-container">
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">VALORACIÓN</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkValoracion" id="checkValoracionSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkValoracion" id="checkValoracionNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorValoracion" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">HISTORIA CLÍNICA</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkHistoriaClinica" id="checkHistoriaClinicaSi"
+                                        value="si" class="checklist-radio" required>
+                                    <input type="radio" name="checkHistoriaClinica" id="checkHistoriaClinicaNo"
+                                        value="no" class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorHistoriaClinica" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">EXÁMENES</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkExamenes" id="checkExamenesSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkExamenes" id="checkExamenesNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorExamenes" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">REVISIÓN DE EXÁMENES</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkRevisionExamenes" id="checkRevisionExamenesSi"
+                                        value="si" class="checklist-radio" required>
+                                    <input type="radio" name="checkRevisionExamenes" id="checkRevisionExamenesNo"
+                                        value="no" class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorRevisionExamenes" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">PLAN DE TRABAJO</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkPlanTrabajo" id="checkPlanTrabajoSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkPlanTrabajo" id="checkPlanTrabajoNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorPlanTrabajo" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">PAGO CIRUGÍA</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkPagoCirugia" id="checkPagoCirugiaSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkPagoCirugia" id="checkPagoCirugiaNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorPagoCirugia" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">PROGRAMACIÓN CIRUGÍA</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkProgramacionCirugia" id="checkProgramacionCirugiaSi"
+                                        value="si" class="checklist-radio" required>
+                                    <input type="radio" name="checkProgramacionCirugia" id="checkProgramacionCirugiaNo"
+                                        value="no" class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorProgramacionCirugia"
+                                    class="checklist-realizado-input" placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">FÓRMULA MÉDICA</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkFormulaMedica" id="checkFormulaMedicaSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkFormulaMedica" id="checkFormulaMedicaNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorFormulaMedica" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">KIT CANCELADO</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkKitCancelado" id="checkKitCanceladoSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkKitCancelado" id="checkKitCanceladoNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorKitCancelado" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">KIT ENTREGADO</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkKitEntregado" id="checkKitEntregadoSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkKitEntregado" id="checkKitEntregadoNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorKitEntregado" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">ASESORÍA PRE QUIRÚRGICA (Folletos,
+                                    literatura)</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkAsesoriaPreQuirurgica"
+                                        id="checkAsesoriaPreQuirurgicaSi" value="si" class="checklist-radio" required>
+                                    <input type="radio" name="checkAsesoriaPreQuirurgica"
+                                        id="checkAsesoriaPreQuirurgicaNo" value="no" class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorAsesoriaPreQuirurgica"
+                                    class="checklist-realizado-input" placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">RECOMENDACIONES (Nutrición, cuidados, etc)</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkRecomendaciones" id="checkRecomendacionesSi"
+                                        value="si" class="checklist-radio" required>
+                                    <input type="radio" name="checkRecomendaciones" id="checkRecomendacionesNo"
+                                        value="no" class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorRecomendaciones" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">DATOS DE CLÍNICA</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkDatosClinica" id="checkDatosClinicaSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkDatosClinica" id="checkDatosClinicaNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorDatosClinica" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">PRÓTESIS</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkProtesis" id="checkProtesisSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkProtesis" id="checkProtesisNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorProtesis" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">PÓLIZA</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkPoliza" id="checkPolizaSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkPoliza" id="checkPolizaNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorPoliza" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">PRIMER MASAJE POSQUIRÚRGICO</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkPrimerMasaje" id="checkPrimerMasajeSi" value="si"
+                                        class="checklist-radio" required>
+                                    <input type="radio" name="checkPrimerMasaje" id="checkPrimerMasajeNo" value="no"
+                                        class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorPrimerMasaje" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+
+                            <div class="checklist-item-row">
+                                <label class="checklist-label-text">CITA DE CONTROL PRIMERA VEZ</label>
+                                <div class="checklist-radios">
+                                    <input type="radio" name="checkCitaControlPrimera" id="checkCitaControlPrimeraSi"
+                                        value="si" class="checklist-radio" required>
+                                    <input type="radio" name="checkCitaControlPrimera" id="checkCitaControlPrimeraNo"
+                                        value="no" class="checklist-radio">
+                                </div>
+                                <input type="text" id="realizadoPorCitaControlPrimera" class="checklist-realizado-input"
+                                    placeholder="Nombre (opcional)">
+                            </div>
+                        </div>
+
+                        <div class="checklist-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="checklistProgress"></div>
+                            </div>
+                            <p class="progress-text"><span id="checklistCount">0</span>/17 items completados</p>
+                        </div>
+
+                        <!-- Sección de Firmas -->
+                        <div class="checklist-firmas">
+                            <h4 class="firmas-title">
+                                <i class="fas fa-signature"></i>
+                                Autorización y Firmas
+                            </h4>
+                            <div class="firmas-grid">
+                                <div class="firma-group">
+                                    <label class="firma-label">FIRMA RESPONSABLE</label>
+                                    <input type="text" id="firmaResponsable" class="firma-input"
+                                        placeholder="Nombre del responsable">
+                                </div>
+                                <div class="firma-group">
+                                    <label class="firma-label">REVISADO POR</label>
+                                    <input type="text" id="revisadoPor" class="firma-input"
+                                        placeholder="Nombre de quien revisa">
+                                </div>
+                                <div class="firma-group">
+                                    <label class="firma-label">APROBADO POR</label>
+                                    <input type="text" id="aprobadoPor" class="firma-input"
+                                        placeholder="Nombre de quien aprueba">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Seguimiento CRM -->
                     <div class="form-section">
                         <h3 class="section-title">
@@ -586,7 +843,8 @@
                             <select id="estadoCirugia" class="form-select" required>
                                 <option value="">Seleccionar estado...</option>
                                 <option value="Exitosa">Exitosa</option>
-                                <option value="Exitosa con complicaciones menores">Exitosa con complicaciones menores</option>
+                                <option value="Exitosa con complicaciones menores">Exitosa con complicaciones menores
+                                </option>
                                 <option value="Complicaciones">Complicaciones</option>
                             </select>
                         </div>
@@ -809,15 +1067,15 @@
     <!-- Google Calendar Integration - Orden importante -->
     <!-- 1. Primero cargamos nuestro módulo GoogleCalendar -->
     <script src="../Componentes/js/GoogleCalendar.js"></script>
-    
+
     <!-- 2. Luego cargamos las APIs de Google que llamarán a los callbacks -->
-    <script async defer src="https://apis.google.com/js/api.js" 
-            onload="if(window.GoogleCalendar) window.GoogleCalendar.gapiLoaded(); else console.warn('GoogleCalendar no disponible aún');">
-    </script>
-    <script async defer src="https://accounts.google.com/gsi/client" 
-            onload="if(window.GoogleCalendar) window.GoogleCalendar.gisLoaded(); else console.warn('GoogleCalendar no disponible aún');">
-    </script>
-    
+    <script async defer src="https://apis.google.com/js/api.js"
+        onload="if(window.GoogleCalendar) window.GoogleCalendar.gapiLoaded(); else console.warn('GoogleCalendar no disponible aún');">
+        </script>
+    <script async defer src="https://accounts.google.com/gsi/client"
+        onload="if(window.GoogleCalendar) window.GoogleCalendar.gisLoaded(); else console.warn('GoogleCalendar no disponible aún');">
+        </script>
+
     <!-- 3. Finalmente cargamos nuestros módulos -->
     <script type="module" src="../Componentes/js/Sidebar.js"></script>
     <script type="module" src="../Componentes/js/Cirugias.js"></script>
