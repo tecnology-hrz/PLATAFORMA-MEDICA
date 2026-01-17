@@ -33,6 +33,14 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Configurar PatientSelector con Firestore
+    if (window.patientSelector) {
+        window.patientSelector.setFirestore(db, { getDocs, collection });
+    }
+
+    // Configurar el trigger del selector de pacientes
+    setupPatientSelector();
+
     // Configurar botón de conexión de Google Calendar
     setupGoogleCalendarButton();
 
@@ -43,6 +51,28 @@ window.addEventListener('DOMContentLoaded', () => {
         startAutoUpdateStates();
     }, 100);
 });
+
+// Setup Patient Selector
+function setupPatientSelector() {
+    const trigger = document.getElementById('patientSelectorTrigger');
+    const inputNombre = document.getElementById('pacienteNombre');
+    const inputId = document.getElementById('pacienteId');
+    const btnSelect = trigger.querySelector('.btn-select-patient');
+
+    // Abrir modal al hacer clic en el input o el botón
+    const openSelector = () => {
+        if (window.patientSelector) {
+            window.patientSelector.open((selectedPatient) => {
+                // Actualizar los campos con el paciente seleccionado
+                inputNombre.value = selectedPatient.nombre || 'Sin nombre';
+                inputId.value = selectedPatient.id;
+            });
+        }
+    };
+
+    inputNombre.addEventListener('click', openSelector);
+    btnSelect.addEventListener('click', openSelector);
+}
 
 // Setup Google Calendar connection button
 function setupGoogleCalendarButton() {
@@ -152,20 +182,10 @@ async function loadPacientes() {
             });
         });
 
-        populatePacienteSelect();
+        // Ya no necesitamos populatePacienteSelect porque usamos el modal
     } catch (error) {
         console.error('Error loading pacientes:', error);
     }
-}
-
-
-function populatePacienteSelect() {
-    const select = document.getElementById('pacienteId');
-    select.innerHTML = '<option value="">Seleccionar paciente</option>';
-
-    allPacientes.forEach(paciente => {
-        select.innerHTML += `<option value="${paciente.id}">${paciente.nombre} - ${paciente.cedula}</option>`;
-    });
 }
 
 // Load usuarios (cirujanos)
@@ -544,6 +564,11 @@ document.getElementById('addCirugiaBtn').addEventListener('click', () => {
     document.getElementById('modalTitle').textContent = 'Nueva Cirugía';
     document.getElementById('cirugiaForm').reset();
     document.getElementById('estado').value = 'Programada';
+    
+    // Limpiar campos de paciente
+    document.getElementById('pacienteNombre').value = '';
+    document.getElementById('pacienteId').value = '';
+    
     document.getElementById('cirugiaModal').classList.add('active');
 
     // Resetear checklist y progreso
@@ -781,7 +806,13 @@ window.editCirugia = function (cirugiaId) {
     editingCirugiaId = cirugiaId;
     document.getElementById('modalTitle').textContent = 'Editar Cirugía';
 
+    // Actualizar campos de paciente
+    const paciente = allPacientes.find(p => p.id === cirugia.pacienteId);
+    if (paciente) {
+        document.getElementById('pacienteNombre').value = paciente.nombre || 'Sin nombre';
+    }
     document.getElementById('pacienteId').value = cirugia.pacienteId;
+    
     document.getElementById('tipoCirugia').value = cirugia.tipoCirugia;
     document.getElementById('cirujanoId').value = cirugia.cirujanoId;
     document.getElementById('lugarCirugia').value = cirugia.lugarCirugia || '';

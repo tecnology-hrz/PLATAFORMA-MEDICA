@@ -43,6 +43,14 @@ window.addEventListener('DOMContentLoaded', () => {
         console.log('EmailJS cargado correctamente');
     }
 
+    // Configurar PatientSelector con Firestore
+    if (window.patientSelector) {
+        window.patientSelector.setFirestore(db, { getDocs, collection });
+    }
+
+    // Configurar el trigger del selector de pacientes
+    setupPatientSelector();
+
     // Configurar botón de conexión de Google Calendar
     setupGoogleCalendarButton();
 
@@ -52,6 +60,28 @@ window.addEventListener('DOMContentLoaded', () => {
         loadCitas();
     }, 100);
 });
+
+// Setup Patient Selector
+function setupPatientSelector() {
+    const trigger = document.getElementById('patientSelectorTrigger');
+    const inputNombre = document.getElementById('pacienteNombre');
+    const inputId = document.getElementById('pacienteId');
+    const btnSelect = trigger.querySelector('.btn-select-patient');
+
+    // Abrir modal al hacer clic en el input o el botón
+    const openSelector = () => {
+        if (window.patientSelector) {
+            window.patientSelector.open((selectedPatient) => {
+                // Actualizar los campos con el paciente seleccionado
+                inputNombre.value = selectedPatient.nombre || 'Sin nombre';
+                inputId.value = selectedPatient.id;
+            });
+        }
+    };
+
+    inputNombre.addEventListener('click', openSelector);
+    btnSelect.addEventListener('click', openSelector);
+}
 
 // Setup Google Calendar connection button
 function setupGoogleCalendarButton() {
@@ -127,20 +157,10 @@ async function loadPacientes() {
             });
         });
 
-        populatePacienteSelect();
+        // Ya no necesitamos populatePacienteSelect porque usamos el modal
     } catch (error) {
         console.error('Error loading pacientes:', error);
     }
-}
-
-function populatePacienteSelect() {
-    const pacienteSelect = document.getElementById('pacienteId');
-
-    pacienteSelect.innerHTML = '<option value="">Seleccionar paciente...</option>';
-
-    allPacientes.forEach(paciente => {
-        pacienteSelect.innerHTML += `<option value="${paciente.id}">${paciente.nombre} - ${paciente.cedula}</option>`;
-    });
 }
 
 // Load usuarios (médicos)
@@ -451,6 +471,10 @@ document.getElementById('addCitaBtn').addEventListener('click', () => {
     document.getElementById('modalTitle').textContent = 'Nueva Cita';
     document.getElementById('citaForm').reset();
     document.getElementById('fechaCita').value = getLocalDateString();
+
+    // Limpiar campos de paciente
+    document.getElementById('pacienteNombre').value = '';
+    document.getElementById('pacienteId').value = '';
 
     // Reset to registered patient
     document.querySelector('input[name="tipoPaciente"][value="registrado"]').checked = true;

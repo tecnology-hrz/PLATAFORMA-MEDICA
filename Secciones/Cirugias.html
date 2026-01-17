@@ -7,6 +7,7 @@
     <title>Cirugías - Eva Cirugía Corporal</title>
     <link rel="stylesheet" href="../Componentes/css/PanelPrincipal.css">
     <link rel="stylesheet" href="../Componentes/css/Cirugias.css">
+    <link rel="stylesheet" href="../Componentes/css/PatientSelector.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -268,9 +269,13 @@
                                 <i class="fas fa-user-injured"></i>
                                 Paciente *
                             </label>
-                            <select id="pacienteId" class="form-select" required>
-                                <option value="">Seleccionar paciente</option>
-                            </select>
+                            <div class="patient-selector-trigger" id="patientSelectorTrigger">
+                                <input type="text" id="pacienteNombre" class="form-input" placeholder="Seleccionar paciente" readonly required>
+                                <input type="hidden" id="pacienteId" required>
+                                <button type="button" class="btn-select-patient">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -1077,6 +1082,7 @@
         </script>
 
     <!-- 3. Finalmente cargamos nuestros módulos -->
+    <script src="../Componentes/js/PatientSelector.js"></script>
     <script type="module" src="../Componentes/js/Sidebar.js"></script>
     <script type="module" src="../Componentes/js/Cirugias.js"></script>
 </body>
