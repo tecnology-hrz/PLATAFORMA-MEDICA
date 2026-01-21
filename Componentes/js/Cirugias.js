@@ -562,12 +562,16 @@ document.getElementById('nextMonth').addEventListener('click', () => {
 document.getElementById('addCirugiaBtn').addEventListener('click', () => {
     editingCirugiaId = null;
     document.getElementById('modalTitle').textContent = 'Nueva Cirugía';
+    document.getElementById('submitBtnText').textContent = 'Programar Cirugía';
     document.getElementById('cirugiaForm').reset();
     document.getElementById('estado').value = 'Programada';
     
     // Limpiar campos de paciente
     document.getElementById('pacienteNombre').value = '';
     document.getElementById('pacienteId').value = '';
+    
+    // Habilitar validación del checklist (agregar required)
+    enableChecklistValidation();
     
     document.getElementById('cirugiaModal').classList.add('active');
 
@@ -595,35 +599,37 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
         return;
     }
 
-    // Validar que todos los items del checklist estén marcados como SÍ
-    const checklistItemNames = [
-        'checkValoracion',
-        'checkHistoriaClinica',
-        'checkExamenes',
-        'checkRevisionExamenes',
-        'checkPlanTrabajo',
-        'checkPagoCirugia',
-        'checkProgramacionCirugia',
-        'checkFormulaMedica',
-        'checkKitCancelado',
-        'checkKitEntregado',
-        'checkAsesoriaPreQuirurgica',
-        'checkRecomendaciones',
-        'checkDatosClinica',
-        'checkProtesis',
-        'checkPoliza',
-        'checkPrimerMasaje',
-        'checkCitaControlPrimera'
-    ];
+    // Validar que todos los items del checklist estén marcados como SÍ SOLO al crear una nueva cirugía
+    if (!editingCirugiaId) {
+        const checklistItemNames = [
+            'checkValoracion',
+            'checkHistoriaClinica',
+            'checkExamenes',
+            'checkRevisionExamenes',
+            'checkPlanTrabajo',
+            'checkPagoCirugia',
+            'checkProgramacionCirugia',
+            'checkFormulaMedica',
+            'checkKitCancelado',
+            'checkKitEntregado',
+            'checkAsesoriaPreQuirurgica',
+            'checkRecomendaciones',
+            'checkDatosClinica',
+            'checkProtesis',
+            'checkPoliza',
+            'checkPrimerMasaje',
+            'checkCitaControlPrimera'
+        ];
 
-    const allMarkedYes = checklistItemNames.every(itemName => {
-        const radioSi = document.querySelector(`input[name="${itemName}"][value="si"]`);
-        return radioSi && radioSi.checked;
-    });
+        const allMarkedYes = checklistItemNames.every(itemName => {
+            const radioSi = document.querySelector(`input[name="${itemName}"][value="si"]`);
+            return radioSi && radioSi.checked;
+        });
 
-    if (!allMarkedYes) {
-        showErrorModal('⚠️ AUTORIZACIÓN REQUERIDA\n\nTodos los items del Check List de Cirugía deben estar marcados como SÍ para autorizar la cirugía.\n\nPor favor, verifica que todos los requisitos hayan sido completados.');
-        return;
+        if (!allMarkedYes) {
+            showErrorModal('⚠️ AUTORIZACIÓN REQUERIDA\n\nTodos los items del Check List de Cirugía deben estar marcados como SÍ para autorizar la cirugía.\n\nPor favor, verifica que todos los requisitos hayan sido completados.');
+            return;
+        }
     }
 
     // Convertir hora 12h a 24h
@@ -718,8 +724,9 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
         const paciente = allPacientes.find(p => p.id === pacienteId);
         const cirujano = allUsuarios.find(u => u.id === cirujanoId);
 
-        // Crear evento en Google Calendar automáticamente si está autorizado
+        // Gestionar evento en Google Calendar automáticamente si está autorizado
         let calendarSuccess = false;
+        let calendarAction = '';
         try {
             if (window.GoogleCalendar && window.GoogleCalendar.isReady() && window.GoogleCalendar.isAuthorized()) {
                 const startDateTime = window.GoogleCalendar.formatDateTimeForCalendar(fechaCirugia, horaCirugia);
@@ -747,28 +754,77 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
                 if (paciente && paciente.email) attendees.push({ email: paciente.email });
                 if (cirujano && cirujano.email) attendees.push({ email: cirujano.email });
 
-                const eventDetails = {
-                    summary: `Cirugía: ${tipoCirugia} - ${paciente ? paciente.nombre : 'Paciente'}`,
-                    description: descripcionCompleta,
-                    startDateTime: startDateTime,
-                    endDateTime: endDateTime,
-                    attendees: attendees
-                };
+                // Si estamos editando y ya existe un evento de Google Calendar, actualizarlo
+                if (editingCirugiaId) {
+                    const cirugiaExistente = allCirugias.find(c => c.id === editingCirugiaId);
+                    
+                    if (cirugiaExistente && cirugiaExistente.googleCalendarEventId) {
+                        // ACTUALIZAR evento existente
+                        const updates = {
+                            summary: `Cirugía: ${tipoCirugia} - ${paciente ? paciente.nombre : 'Paciente'}`,
+                            description: descripcionCompleta,
+                            start: {
+                                dateTime: startDateTime,
+                                timeZone: 'America/Bogota',
+                            },
+                            end: {
+                                dateTime: endDateTime,
+                                timeZone: 'America/Bogota',
+                            },
+                            attendees: attendees
+                        };
 
-                const calendarEvent = await window.GoogleCalendar.createCalendarEvent(eventDetails);
+                        await window.GoogleCalendar.updateCalendarEvent(cirugiaExistente.googleCalendarEventId, updates);
+                        console.log('✅ Evento actualizado en Google Calendar');
+                        calendarSuccess = true;
+                        calendarAction = 'actualizado';
+                    } else {
+                        // No tiene evento previo, crear uno nuevo
+                        const eventDetails = {
+                            summary: `Cirugía: ${tipoCirugia} - ${paciente ? paciente.nombre : 'Paciente'}`,
+                            description: descripcionCompleta,
+                            startDateTime: startDateTime,
+                            endDateTime: endDateTime,
+                            attendees: attendees
+                        };
 
-                // Guardar el ID del evento de Google Calendar en Firebase
-                await updateDoc(doc(db, 'cirugias', cirugiaId), {
-                    googleCalendarEventId: calendarEvent.id
-                });
+                        const calendarEvent = await window.GoogleCalendar.createCalendarEvent(eventDetails);
 
-                console.log('✅ Evento creado en Google Calendar');
-                calendarSuccess = true;
+                        // Guardar el ID del evento de Google Calendar en Firebase
+                        await updateDoc(doc(db, 'cirugias', cirugiaId), {
+                            googleCalendarEventId: calendarEvent.id
+                        });
+
+                        console.log('✅ Evento creado en Google Calendar');
+                        calendarSuccess = true;
+                        calendarAction = 'creado';
+                    }
+                } else {
+                    // CREAR nuevo evento para cirugía nueva
+                    const eventDetails = {
+                        summary: `Cirugía: ${tipoCirugia} - ${paciente ? paciente.nombre : 'Paciente'}`,
+                        description: descripcionCompleta,
+                        startDateTime: startDateTime,
+                        endDateTime: endDateTime,
+                        attendees: attendees
+                    };
+
+                    const calendarEvent = await window.GoogleCalendar.createCalendarEvent(eventDetails);
+
+                    // Guardar el ID del evento de Google Calendar en Firebase
+                    await updateDoc(doc(db, 'cirugias', cirugiaId), {
+                        googleCalendarEventId: calendarEvent.id
+                    });
+
+                    console.log('✅ Evento creado en Google Calendar');
+                    calendarSuccess = true;
+                    calendarAction = 'creado';
+                }
             } else {
                 console.log('⚠️ Google Calendar no está autorizado. La cirugía se guardó pero no se agregó al calendario.');
             }
         } catch (calendarError) {
-            console.error('⚠️ Error al crear evento en calendario:', calendarError);
+            console.error('⚠️ Error al gestionar evento en calendario:', calendarError);
             // No bloqueamos el flujo si falla el calendario
         }
 
@@ -779,7 +835,11 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
         let mensaje = editingCirugiaId ? '✅ Cirugía actualizada exitosamente' : '✅ Cirugía programada exitosamente';
 
         if (calendarSuccess) {
-            mensaje += ' y agregada a Google Calendar';
+            if (calendarAction === 'actualizado') {
+                mensaje += ' y evento actualizado en Google Calendar';
+            } else {
+                mensaje += ' y agregada a Google Calendar';
+            }
         } else if (window.GoogleCalendar && window.GoogleCalendar.isReady() && !window.GoogleCalendar.isAuthorized()) {
             mensaje += '. ⚠️ Para agregar al calendario, primero debes conectar Google Calendar';
         }
@@ -805,6 +865,10 @@ window.editCirugia = function (cirugiaId) {
 
     editingCirugiaId = cirugiaId;
     document.getElementById('modalTitle').textContent = 'Editar Cirugía';
+    document.getElementById('submitBtnText').textContent = 'Guardar Cambios';
+    
+    // Deshabilitar validación del checklist (quitar required)
+    disableChecklistValidation();
 
     // Actualizar campos de paciente
     const paciente = allPacientes.find(p => p.id === cirugia.pacienteId);
@@ -1651,3 +1715,63 @@ document.addEventListener('change', function (e) {
         updateChecklistProgress();
     }
 });
+
+// Función para deshabilitar validación del checklist (al editar)
+function disableChecklistValidation() {
+    const checklistItemNames = [
+        'checkValoracion',
+        'checkHistoriaClinica',
+        'checkExamenes',
+        'checkRevisionExamenes',
+        'checkPlanTrabajo',
+        'checkPagoCirugia',
+        'checkProgramacionCirugia',
+        'checkFormulaMedica',
+        'checkKitCancelado',
+        'checkKitEntregado',
+        'checkAsesoriaPreQuirurgica',
+        'checkRecomendaciones',
+        'checkDatosClinica',
+        'checkProtesis',
+        'checkPoliza',
+        'checkPrimerMasaje',
+        'checkCitaControlPrimera'
+    ];
+
+    checklistItemNames.forEach(itemName => {
+        const radioSi = document.querySelector(`input[name="${itemName}"][value="si"]`);
+        const radioNo = document.querySelector(`input[name="${itemName}"][value="no"]`);
+        
+        if (radioSi) radioSi.removeAttribute('required');
+        if (radioNo) radioNo.removeAttribute('required');
+    });
+}
+
+// Función para habilitar validación del checklist (al crear nueva)
+function enableChecklistValidation() {
+    const checklistItemNames = [
+        'checkValoracion',
+        'checkHistoriaClinica',
+        'checkExamenes',
+        'checkRevisionExamenes',
+        'checkPlanTrabajo',
+        'checkPagoCirugia',
+        'checkProgramacionCirugia',
+        'checkFormulaMedica',
+        'checkKitCancelado',
+        'checkKitEntregado',
+        'checkAsesoriaPreQuirurgica',
+        'checkRecomendaciones',
+        'checkDatosClinica',
+        'checkProtesis',
+        'checkPoliza',
+        'checkPrimerMasaje',
+        'checkCitaControlPrimera'
+    ];
+
+    checklistItemNames.forEach(itemName => {
+        const radioSi = document.querySelector(`input[name="${itemName}"][value="si"]`);
+        
+        if (radioSi) radioSi.setAttribute('required', 'required');
+    });
+}
