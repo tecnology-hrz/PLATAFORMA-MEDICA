@@ -762,7 +762,7 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
                 descripcionCompleta += `\nDuración Estimada: ${duracion} horas`;
 
                 if (cirugiaData.anestesiologo) descripcionCompleta += `\n\nEquipo Quirúrgico:\nAnestesiólogo: ${cirugiaData.anestesiologo}`;
-                if (cirugiaData.instrumentista) descripcionCompleta += `\nInstrumentista: ${cirugiaData.instrumentista}`;
+                if (cirugiaData.instrumentista) descripcionCompleta += `\nInstrumentadora: ${cirugiaData.instrumentista}`;
                 if (cirugiaData.enfermera) descripcionCompleta += `\nEnfermera Circulante: ${cirugiaData.enfermera}`;
                 if (cirugiaData.cirujanoAsistente) descripcionCompleta += `\nCirujano Asistente: ${cirugiaData.cirujanoAsistente}`;
                 if (cirugiaData.descripcion) descripcionCompleta += `\n\nNotas: ${cirugiaData.descripcion}`;
@@ -1017,7 +1017,7 @@ window.viewCirugia = function (cirugiaId) {
                 ` : ''}
                 ${cirugia.instrumentista ? `
                 <div>
-                    <div class="form-label">Instrumentista</div>
+                    <div class="form-label">Instrumentadora</div>
                     <div style="font-size: 15px; color: #2B3545; font-weight: 500;">${cirugia.instrumentista}</div>
                 </div>
                 ` : ''}
@@ -1187,7 +1187,7 @@ window.markAsCompleted = function (cirugiaId) {
                 // Construir descripción del equipo quirúrgico
                 let equipoQuirurgico = `Cirujano Principal: ${cirujanoNombre}`;
                 if (cirugia.anestesiologo) equipoQuirurgico += `\nAnestesiólogo: ${cirugia.anestesiologo}`;
-                if (cirugia.instrumentista) equipoQuirurgico += `\nInstrumentista: ${cirugia.instrumentista}`;
+                if (cirugia.instrumentista) equipoQuirurgico += `\nInstrumentadora: ${cirugia.instrumentista}`;
                 if (cirugia.enfermera) equipoQuirurgico += `\nEnfermera Circulante: ${cirugia.enfermera}`;
                 if (cirugia.cirujanoAsistente) equipoQuirurgico += `\nCirujano Asistente: ${cirugia.cirujanoAsistente}`;
                 if (cirugia.otrosMiembros) equipoQuirurgico += `\nOtros: ${cirugia.otrosMiembros}`;
