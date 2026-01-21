@@ -247,6 +247,16 @@ body {
     border-color: #D11A5C;
 }
 
+/* Input de texto para filtro de tipo de cirugía */
+input.filter-select {
+    cursor: text;
+}
+
+input.filter-select::placeholder {
+    color: #adb5bd;
+    font-style: italic;
+}
+
 /* Stats Cards */
 .cirugias-stats {
     display: grid;

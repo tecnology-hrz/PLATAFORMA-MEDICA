@@ -419,12 +419,12 @@ clearSearchBtn.addEventListener('click', () => {
     applyFilters();
 });
 
-filterTipoCirugia.addEventListener('change', applyFilters);
+filterTipoCirugia.addEventListener('input', applyFilters);
 filterEstado.addEventListener('change', applyFilters);
 
 function applyFilters() {
     const searchTerm = searchInput.value.toLowerCase();
-    const tipoCirugiaFilter = filterTipoCirugia.value;
+    const tipoCirugiaFilter = filterTipoCirugia.value.toLowerCase();
     const estadoFilter = filterEstado.value;
 
     filteredCirugias = allCirugias.filter(cirugia => {
@@ -433,7 +433,7 @@ function applyFilters() {
 
         const matchSearch = !searchTerm || pacienteNombre.includes(searchTerm);
 
-        const matchTipoCirugia = !tipoCirugiaFilter || cirugia.tipoCirugia === tipoCirugiaFilter;
+        const matchTipoCirugia = !tipoCirugiaFilter || cirugia.tipoCirugia.toLowerCase().includes(tipoCirugiaFilter);
 
         const matchEstado = !estadoFilter || cirugia.estado === estadoFilter;
 
