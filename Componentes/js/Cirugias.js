@@ -583,6 +583,18 @@ document.getElementById('addCirugiaBtn').addEventListener('click', () => {
 document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Prevenir doble envío
+    const submitBtn = document.getElementById('submitCirugiaBtn');
+    if (submitBtn.disabled) {
+        console.log('⚠️ Formulario ya está siendo procesado');
+        return;
+    }
+
+    // Deshabilitar botón inmediatamente
+    submitBtn.disabled = true;
+    const originalBtnText = document.getElementById('submitBtnText').textContent;
+    document.getElementById('submitBtnText').textContent = 'Guardando...';
+
     const pacienteId = document.getElementById('pacienteId').value;
     const tipoCirugia = document.getElementById('tipoCirugia').value;
     const cirujanoId = document.getElementById('cirujanoId').value;
@@ -596,6 +608,9 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
 
     if (!pacienteId || !tipoCirugia || !cirujanoId || !lugarCirugia || !fechaCirugia || !hora || !minuto || !periodo || !duracion) {
         showErrorModal('Por favor, completa todos los campos obligatorios');
+        // Rehabilitar botón
+        submitBtn.disabled = false;
+        document.getElementById('submitBtnText').textContent = originalBtnText;
         return;
     }
 
@@ -628,6 +643,9 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
 
         if (!allMarkedYes) {
             showErrorModal('⚠️ AUTORIZACIÓN REQUERIDA\n\nTodos los items del Check List de Cirugía deben estar marcados como SÍ para autorizar la cirugía.\n\nPor favor, verifica que todos los requisitos hayan sido completados.');
+            // Rehabilitar botón
+            submitBtn.disabled = false;
+            document.getElementById('submitBtnText').textContent = originalBtnText;
             return;
         }
     }
@@ -831,6 +849,10 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
         document.getElementById('cirugiaModal').classList.remove('active');
         hideLoadingModal();
 
+        // Rehabilitar botón
+        submitBtn.disabled = false;
+        document.getElementById('submitBtnText').textContent = originalBtnText;
+
         // Mostrar resultado según el calendario
         let mensaje = editingCirugiaId ? '✅ Cirugía actualizada exitosamente' : '✅ Cirugía programada exitosamente';
 
@@ -854,6 +876,10 @@ document.getElementById('cirugiaForm').addEventListener('submit', async (e) => {
         hideLoadingModal();
         console.error('Error saving cirugia:', error);
         showErrorModal('Error al guardar la cirugía');
+        
+        // Rehabilitar botón en caso de error
+        submitBtn.disabled = false;
+        document.getElementById('submitBtnText').textContent = originalBtnText;
     }
 });
 

@@ -1094,6 +1094,18 @@ input[type="date"]::-webkit-datetime-edit-year-field {
     box-shadow: 0 6px 20px rgba(209, 26, 92, 0.4);
 }
 
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 15px rgba(209, 26, 92, 0.2);
+}
+
+.btn-primary:disabled:hover {
+    transform: none;
+    box-shadow: 0 4px 15px rgba(209, 26, 92, 0.2);
+}
+
 /* Loading & Message Modals */
 .spinner {
     width: 50px;
